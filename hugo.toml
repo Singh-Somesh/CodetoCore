@@ -1,0 +1,99 @@
+baseURL = "https://codetocore.com/"
+title = "CodetoCore"
+theme = "PaperMod"
+languageCode = "en-us"
+defaultContentLanguage = "en"
+
+enableRobotsTXT = true
+enableGitInfo = true
+enableEmoji = true
+hasCJKLanguage = false
+
+[params]
+  env = "production"
+  title = "CodetoCore"
+  description = "Embedded security, hardware root of trust, and Trusted Firmware on ARM platforms."
+  author = "Somesh Singh"
+  defaultTheme = "auto"
+  ShowReadingTime = true
+  ShowShareButtons = false
+  ShowPostNavLinks = true
+  ShowBreadCrumbs = true
+  ShowCodeCopyButtons = true
+  ShowToc = true
+  TocOpen = false
+  ShowRssButtonInSectionTermList = true
+  disableScrollToTop = false
+  comments = false
+
+  [params.profileMode]
+    enabled = true
+    title = "Somesh Singh"
+    subtitle = "Embedded Security Architect — ARM TrustZone, Trusted Firmware, Secure Boot, HRoT"
+    imageUrl = "/images/profile.jpg"
+    imageWidth = 120
+    imageHeight = 120
+    imageTitle = "Profile"
+    [[params.profileMode.buttons]]
+      name = "Projects"
+      url = "/projects/"
+    [[params.profileMode.buttons]]
+      name = "Writing"
+      url = "/posts/"
+    [[params.profileMode.buttons]]
+      name = "Resume"
+      url = "/resume/"
+
+  [params.homeInfoParams]
+    Title = "Hi 👋"
+    Content = "I build hardware-rooted security architectures for connected embedded devices. ARM TrustZone, Trusted Firmware, secure boot, and HSM-backed PKI on Cortex-M and Cortex-A platforms."
+
+  [[params.socialIcons]]
+    name = "github"
+    url = "https://github.com/<your-username>"
+  [[params.socialIcons]]
+    name = "linkedin"
+    url = "https://linkedin.com/in/<your-handle>"
+  [[params.socialIcons]]
+    name = "email"
+    url = "mailto:you@codetocore.com"
+  [[params.socialIcons]]
+    name = "rss"
+    url = "/index.xml"
+
+[menu]
+  [[menu.main]]
+    identifier = "projects"
+    name = "Projects"
+    url = "/projects/"
+    weight = 10
+  [[menu.main]]
+    identifier = "posts"
+    name = "Writing"
+    url = "/posts/"
+    weight = 20
+  [[menu.main]]
+    identifier = "about"
+    name = "About"
+    url = "/about/"
+    weight = 30
+  [[menu.main]]
+    identifier = "now"
+    name = "Now"
+    url = "/now/"
+    weight = 40
+  [[menu.main]]
+    identifier = "resume"
+    name = "Resume"
+    url = "/resume/"
+    weight = 50
+
+[markup.goldmark.renderer]
+  unsafe = true
+
+[markup.highlight]
+  codeFences = true
+  guessSyntax = true
+  lineNos = false
+  noClasses = false
+  style = "monokai"
