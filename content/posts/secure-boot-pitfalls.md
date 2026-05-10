@@ -262,3 +262,59 @@ This is a half-finished chain. The attacker simply modifies the
 kernel.
 
 A real chain of trust has every stage verifying the next:
+
+Boot ROM → MB1 → MB2 → TF-A → OP-TEE → CBoot → Kernel → ...
+✓   →   ✓  →  ✓   →  ✓   →   ✓    →   ✓   →   ✓    →
+
+Every arrow is a signature verification. Skip any one and the chain
+is broken at that point and below.
+
+**The fix:** Audit the boot chain. Document every stage, what
+verifies the next, with what key, against what policy. Where
+verification is missing, add it. The bootloader on most platforms is
+non-trivial to modify, but a chain with gaps isn't a chain.
+
+## What to do about all this
+
+Three practical steps for any team that wants to verify rather than
+assume:
+
+**1. Threat-model the boot flow.** Write down every stage, every key,
+every assumption. Then ask: what does an attacker with physical
+access, firmware-only access, and remote access need to do at each
+stage to break the chain? Gaps appear quickly.
+
+**2. Test the failure paths.** Build deliberately broken firmware
+(invalid signature, modified payload, downgraded version) and confirm
+the device refuses every variation. Make these CI tests.
+
+**3. Be honest about residual risk.** Some pitfalls are expensive to
+fix. Document the ones not being addressed and why. "We don't protect
+against glitch attacks because our threat model excludes attackers
+with hardware access" is a valid statement. "We have secure boot"
+without that qualifier is misleading.
+
+## The principle that ties them together
+
+Secure boot isn't a feature that gets turned on. It's a property of
+the system that has to be designed, implemented, tested, and verified
+at every layer — silicon, bootloader, build pipeline, manufacturing,
+field operations.
+
+The reason most "secure boot" isn't actually secure is the same
+reason most "encrypted communications" aren't actually encrypted and
+most "authenticated APIs" aren't actually authenticated: the obvious
+60% gets implemented and called done. The remaining 40% — the failure
+modes, the operational discipline, the threat model honesty — is
+where the security actually lives.
+
+A team that treats secure boot as a checkbox doesn't have secure boot.
+A team that treats it as a property to be continuously verified
+might.
+
+---
+
+*Next in this series: implementing properly-rooted secure boot on the
+NXP FRDM-MCXN947 — a Cortex-M33 board with TrustZone-M and a hardware
+EdgeLock Secure Enclave — using Trusted Firmware-M, addressing the
+pitfalls described above.*
