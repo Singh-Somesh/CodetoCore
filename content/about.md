@@ -4,6 +4,7 @@ url: "/about/"
 showtoc: false
 hidemeta: true
 disableShare: true
+hideInList: true
 ---
 
 I'm Somesh Singh — an embedded software engineer specializing in

@@ -1,4 +1,4 @@
-baseURL = "https://codetocore.com/"
+baseURL = "codetocore.com"
 title = "CodetoCore"
 theme = "PaperMod"
 languageCode = "en-us"
@@ -47,13 +47,13 @@ hasCJKLanguage = false
 
   [[params.socialIcons]]
     name = "github"
-    url = "https://github.com/<your-username>"
+    url = "https://github.com/singh-somesh"
   [[params.socialIcons]]
     name = "linkedin"
-    url = "https://linkedin.com/in/<your-handle>"
+    url = "https://linkedin.com/in/singh-somesh"
   [[params.socialIcons]]
     name = "email"
-    url = "mailto:you@codetocore.com"
+    url = "mailto:somesh@codetocore.com"
   [[params.socialIcons]]
     name = "rss"
     url = "/index.xml"
