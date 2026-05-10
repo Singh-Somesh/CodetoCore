@@ -74,11 +74,6 @@ hasCJKLanguage = false
     name = "About"
     url = "/about/"
     weight = 30
-  [[menu.main]]
-    identifier = "now"
-    name = "Now"
-    url = "/now/"
-    weight = 40
 
 [markup.goldmark.renderer]
   unsafe = true
