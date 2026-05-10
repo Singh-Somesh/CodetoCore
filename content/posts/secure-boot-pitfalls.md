@@ -264,7 +264,8 @@ kernel.
 A real chain of trust has every stage verifying the next:
 
 Boot ROM → MB1 → MB2 → TF-A → OP-TEE → CBoot → Kernel → ...
-✓   →   ✓  →  ✓   →  ✓   →   ✓    →   ✓   →   ✓    →
+
+   ✓   →   ✓  →  ✓   →  ✓   →   ✓    →   ✓   →   ✓    →
 
 Every arrow is a signature verification. Skip any one and the chain
 is broken at that point and below.
