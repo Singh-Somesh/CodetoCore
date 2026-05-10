@@ -266,19 +266,15 @@ A real chain of trust has every stage verifying the next:
 
 A real chain of trust has every stage verifying the next:
 
-```mermaid
+{{< mermaid >}}
 flowchart LR
     A(Boot ROM) --> B(MB1)
     B --> C(MB2)
     C --> D(TF-A)
     D --> E(OP-TEE)
     E --> F(CBoot)
-    G(Kernel)
-    F --> G
-    
-    classDef stage fill:#e1f5ff,stroke:#0066aa,stroke-width:2px,color:#000
-    class A,B,C,D,E,F,G stage
-```
+    F --> G(Kernel)
+{{< /mermaid >}}
 
 Each arrow represents a signature verification. Skip any one and the chain is broken from that point onward.
 
