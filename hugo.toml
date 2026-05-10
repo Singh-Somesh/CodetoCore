@@ -30,10 +30,10 @@ hasCJKLanguage = false
     enabled = true
     title = "Somesh Singh"
     subtitle = "Embedded Security Architect — ARM TrustZone, Trusted Firmware, Secure Boot, HRoT"
-    imageUrl = "/images/profile.jpg"
-    imageWidth = 120
-    imageHeight = 120
-    imageTitle = "Profile"
+    # imageUrl = "/images/profile.jpg"
+    # imageWidth = 120
+    # imageHeight = 120
+    # imageTitle = "Profile"
     [[params.profileMode.buttons]]
       name = "Projects"
       url = "/projects/"
