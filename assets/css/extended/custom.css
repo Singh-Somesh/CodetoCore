@@ -1,0 +1,20 @@
+/* Reduce profile section top spacing on mobile */
+.profile {
+  min-height: auto !important;
+  padding-top: 1rem !important;
+}
+
+@media screen and (max-width: 768px) {
+  .profile {
+    padding-top: 0.5rem !important;
+    margin-top: 0 !important;
+  }
+  
+  .profile_inner {
+    padding-top: 0 !important;
+  }
+  
+  .profile img {
+    margin-top: 0 !important;
+  }
+}
