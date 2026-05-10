@@ -267,12 +267,12 @@ whatever the first-stage bootloader loads next.
 
 A complete chain of trust has every stage verifying the next:
 
-- **Boot ROM** verifies → **MB1**
-- **MB1** verifies → **MB2**
-- **MB2** verifies → **TF-A**
-- **TF-A** verifies → **OP-TEE**
-- **OP-TEE** verifies → **CBoot**
-- **CBoot** verifies → **Kernel**
+- **Boot ROM** verifies → **First-stage bootloader**
+- **First-stage bootloader** verifies → **Second-stage bootloader**
+- **Second-stage bootloader** verifies → **Secure monitor (TF-A)**
+- **Secure monitor** verifies → **TEE (OP-TEE)**
+- **TEE** verifies → **Non-secure bootloader**
+- **Non-secure bootloader** verifies → **Kernel**
 
 Every step is a signature verification. Skip any one, and the chain
 is broken at that point and below.
