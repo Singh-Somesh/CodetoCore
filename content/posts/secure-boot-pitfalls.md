@@ -321,8 +321,3 @@ A team that treats it as a property to be continuously verified
 might.
 
 ---
-
-*Next in this series: implementing properly-rooted secure boot on the
-NXP FRDM-MCXN947 — a Cortex-M33 board with TrustZone-M and a hardware
-EdgeLock Secure Enclave — using Trusted Firmware-M, addressing the
-pitfalls described above.*
