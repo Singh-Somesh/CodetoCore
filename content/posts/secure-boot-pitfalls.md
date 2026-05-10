@@ -2,7 +2,6 @@
 title: "Why Your Secure Boot Probably Isn't Actually Secure"
 date: 2025-05-10
 draft: false
-mermaid: true
 tags:
   - secure-boot
   - embedded-security
@@ -266,15 +265,12 @@ A real chain of trust has every stage verifying the next:
 
 A real chain of trust has every stage verifying the next:
 
-{{< mermaid >}}
-flowchart LR
-    A(Boot ROM) --> B(MB1)
-    B --> C(MB2)
-    C --> D(TF-A)
-    D --> E(OP-TEE)
-    E --> F(CBoot)
-    F --> G(Kernel)
-{{< /mermaid >}}
+- **Boot ROM** verifies → **MB1**
+- **MB1** verifies → **MB2**
+- **MB2** verifies → **TF-A**
+- **TF-A** verifies → **OP-TEE**
+- **OP-TEE** verifies → **CBoot**
+- **CBoot** verifies → **Kernel**
 
 Each arrow represents a signature verification. Skip any one and the chain is broken from that point onward.
 
