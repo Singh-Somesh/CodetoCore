@@ -53,7 +53,7 @@ Pi — and do not represent the views or work of my employer.
 
 - **Email** — [somesh@codetocore.com](mailto:somesh@codetocore.com)
 - **GitHub** — [github.com/singh-somesh](https://github.com/singh-somesh)
-- **LinkedIn** — [linkedin.com/in/your-handle](https://linkedin.com/in/your-handle)
+- **LinkedIn** — [linkedin.com/in/singh-somesh/](https://linkedin.com/in/singh-somesh/)
 
 If you're working on embedded security architecture, Hardware Root
 of Trust, or anything in this space and want to compare notes, I'd
