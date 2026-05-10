@@ -40,9 +40,6 @@ hasCJKLanguage = false
     [[params.profileMode.buttons]]
       name = "Writing"
       url = "/posts/"
-    [[params.profileMode.buttons]]
-      name = "Resume"
-      url = "/resume/"
 
   [params.homeInfoParams]
     Title = "Hi 👋"
@@ -82,11 +79,6 @@ hasCJKLanguage = false
     name = "Now"
     url = "/now/"
     weight = 40
-  [[menu.main]]
-    identifier = "resume"
-    name = "Resume"
-    url = "/resume/"
-    weight = 50
 
 [markup.goldmark.renderer]
   unsafe = true
