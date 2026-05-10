@@ -1,13 +1,14 @@
-{{ if .Params.mermaid }}
-<script type="module">
-  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
-  mermaid.initialize({ 
-    startOnLoad: true, 
-    theme: document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default',
-    flowchart: { 
-      curve: 'linear',
-      htmlLabels: true
+{{- if (.Params.mermaid) }}
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'default',
+    securityLevel: 'loose',
+    flowchart: {
+      htmlLabels: true,
+      curve: 'linear'
     }
   });
 </script>
-{{ end }}
+{{- end }}
