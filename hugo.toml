@@ -3,11 +3,11 @@ title = "CodetoCore"
 theme = "PaperMod"
 languageCode = "en-us"
 defaultContentLanguage = "en"
-
 enableRobotsTXT = true
 enableGitInfo = true
 enableEmoji = true
 hasCJKLanguage = false
+copyright = "© 2025 CodetoCore"
 
 [params]
   env = "production"
