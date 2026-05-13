@@ -29,7 +29,7 @@ copyright = "© 2025 CodetoCore"
   [params.profileMode]
     enabled = true
     title = "Somesh Singh"
-    subtitle = "Embedded Security Architect — ARM TrustZone, Trusted Firmware, Secure Boot, HRoT"
+    subtitle = "Embedded Systems Engineer specializing in platform security — ARM TrustZone, Trusted Firmware, secure boot, HRoT."
     # imageUrl = "/images/profile.jpg"
     # imageWidth = 120
     # imageHeight = 120
