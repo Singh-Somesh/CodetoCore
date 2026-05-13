@@ -7,7 +7,7 @@
     <generator>Hugo</generator>
     <language>en-us</language>
     <copyright>2025 CodetoCore</copyright>
-    <lastBuildDate>Tue, 12 May 2026 12:36:14 +0530</lastBuildDate>
+    <lastBuildDate>Wed, 13 May 2026 06:58:16 +0530</lastBuildDate>
     <atom:link href="//localhost:1313/tags/cortex-m/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Is SysTick Accurate Enough for Microsecond Timing?</title>

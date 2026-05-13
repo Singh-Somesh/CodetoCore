@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>TrustZone on CodetoCore</title>
+    <link>//localhost:1313/tags/trustzone/</link>
+    <description>Recent content in TrustZone on CodetoCore</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <copyright>2025 CodetoCore</copyright>
+    <lastBuildDate>Tue, 17 Mar 2026 00:00:00 +0000</lastBuildDate>
+    <atom:link href="//localhost:1313/tags/trustzone/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>TF-M vs TF-A — When Do You Reach For Which?</title>
+      <link>//localhost:1313/posts/tf-m-vs-tf-a/</link>
+      <pubDate>Tue, 17 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>//localhost:1313/posts/tf-m-vs-tf-a/</guid>
+      <description>TF-M is for Cortex-M microcontrollers, TF-A is for Cortex-A application processors. Different exception models, different attack surfaces, not interchangeable.</description>
+    </item>
+  </channel>
+</rss>

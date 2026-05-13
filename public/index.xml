@@ -7,8 +7,22 @@
     <generator>Hugo</generator>
     <language>en-us</language>
     <copyright>2025 CodetoCore</copyright>
-    <lastBuildDate>Tue, 12 May 2026 12:36:14 +0530</lastBuildDate>
+    <lastBuildDate>Wed, 13 May 2026 07:10:04 +0530</lastBuildDate>
     <atom:link href="//localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>TF-M vs TF-A — When Do You Reach For Which?</title>
+      <link>//localhost:1313/posts/tf-m-vs-tf-a/</link>
+      <pubDate>Tue, 17 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>//localhost:1313/posts/tf-m-vs-tf-a/</guid>
+      <description>TF-M is for Cortex-M microcontrollers, TF-A is for Cortex-A application processors. Different exception models, different attack surfaces, not interchangeable.</description>
+    </item>
+    <item>
+      <title>Do I Need a Secure Element If My MCU Has a Crypto Accelerator?</title>
+      <link>//localhost:1313/posts/do-i-need-a-secure-element-with-a-crypto-accelerator/</link>
+      <pubDate>Sun, 15 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>//localhost:1313/posts/do-i-need-a-secure-element-with-a-crypto-accelerator/</guid>
+      <description>Short answer: they solve different problems. A crypto accelerator makes crypto operations fast. A secure element makes sure your keys never leave the chip.</description>
+    </item>
     <item>
       <title>Is SysTick Accurate Enough for Microsecond Timing?</title>
       <link>//localhost:1313/posts/is-systick-accurate-for-microsecond-timing/</link>

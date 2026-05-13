@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>TF-M vs TF-A — When Do You Reach For Which? | CodetoCore</title>
+<meta name="keywords" content="Quick Take, TF-M, TF-A, TrustZone, Trusted Firmware, ARM">
+<meta name="description" content="TF-M is for Cortex-M microcontrollers, TF-A is for Cortex-A application processors. Different exception models, different attack surfaces, not interchangeable.">
+<meta name="author" content="Somesh Singh">
+<link rel="canonical" href="//localhost:1313/posts/tf-m-vs-tf-a/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7a73f6d22832740d3b34a080c56bbd1c5eae5d07a4fb24abad905861b132c9dd.css" integrity="sha256-enP20igydA07NKCAxWu9HF6uXQek&#43;ySrrZBYYbEyyd0=" rel="preload stylesheet" as="style">
+<link rel="icon" href="//localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="//localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="//localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="//localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="//localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="//localhost:1313/posts/tf-m-vs-tf-a/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><meta property="og:url" content="//localhost:1313/posts/tf-m-vs-tf-a/">
+  <meta property="og:site_name" content="CodetoCore">
+  <meta property="og:title" content="TF-M vs TF-A — When Do You Reach For Which?">
+  <meta property="og:description" content="TF-M is for Cortex-M microcontrollers, TF-A is for Cortex-A application processors. Different exception models, different attack surfaces, not interchangeable.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2026-03-17T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-17T00:00:00+00:00">
+    <meta property="article:tag" content="Quick Take">
+    <meta property="article:tag" content="TF-M">
+    <meta property="article:tag" content="TF-A">
+    <meta property="article:tag" content="TrustZone">
+    <meta property="article:tag" content="Trusted Firmware">
+    <meta property="article:tag" content="ARM">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="TF-M vs TF-A — When Do You Reach For Which?">
+  <meta name="twitter:description" content="TF-M is for Cortex-M microcontrollers, TF-A is for Cortex-A application processors. Different exception models, different attack surfaces, not interchangeable.">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "//localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "TF-M vs TF-A — When Do You Reach For Which?",
+      "item": "//localhost:1313/posts/tf-m-vs-tf-a/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "TF-M vs TF-A — When Do You Reach For Which?",
+  "name": "TF-M vs TF-A — When Do You Reach For Which?",
+  "description": "TF-M is for Cortex-M microcontrollers, TF-A is for Cortex-A application processors. Different exception models, different attack surfaces, not interchangeable.",
+  "keywords": [
+    "Quick Take", "TF-M", "TF-A", "TrustZone", "Trusted Firmware", "ARM"
+  ],
+  "articleBody": " This is personal exploration on publicly available reference platforms; it does not represent the views or work of my employer.\nShort answer: TF-M is for Cortex-M microcontrollers. TF-A is for Cortex-A application processors. The exception model on your silicon decides which one you run.\nPeople mix these up because both are called “Trusted Firmware” and both ship out of TrustedFirmware.org. They’re not interchangeable.\nTF-M (Trusted Firmware-M) Cortex-M class silicon with Armv8-M TrustZone. There are no exception levels — instead the SAU and IDAU split the address space into Secure and Non-Secure regions. TF-M runs as the SPE. The application runs as NSPE and crosses into the SPE through NSC veneers, gated by the SG instruction.\nFootprint is tens of KB. Ships with PSA Crypto, Internal Trusted Storage, and Initial Attestation as secure partitions. Lives on sensors, wearables, smart locks, anywhere an MCU runs an RTOS.\nTF-A (Trusted Firmware-A) Cortex-A class silicon with Armv8-A TrustZone. You get EL0 through EL3 as exception levels, an MMU, and a multi-stage boot chain:\nBL1 — immutable ROM, anchors the chain of trust BL2 — trusted boot loader, verifies the next stages BL31 — EL3 runtime, handles SMC calls and PSCI BL32 — secure payload, usually OP-TEE BL33 — non-secure bootloader, usually U-Boot or UEFI Footprint is megabytes. Lives on phones, automotive SoCs, gateways, anywhere Linux runs in the normal world.\nWhat works Pick by the silicon. Armv8-M with SAU means TF-M. EL3 means TF-A. If your SoC has both an A-class cluster and an M-class security island — common in automotive and some gateways — you’ll run both. They cooperate. They don’t replace each other.\nHonest tradeoffs TF-M is small but isolation is coarser. You’re working inside an MPU and SAU, not an MMU with proper privilege levels. TF-A gives you a real secure OS and full privilege separation, but the five-stage boot is not free in either complexity or RAM.\nSame family, different worlds.\n",
+  "wordCount" : "321",
+  "inLanguage": "en",
+  "datePublished": "2026-03-17T00:00:00Z",
+  "dateModified": "2026-03-17T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "Somesh Singh"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "//localhost:1313/posts/tf-m-vs-tf-a/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CodetoCore",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "//localhost:1313/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="header-nav">
+        <div class="logo">
+            <a href="//localhost:1313/" accesskey="h" title="CodetoCore (Alt + H)">CodetoCore</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" class="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu" class="menu">
+            <li>
+                <a href="//localhost:1313/projects/" title="Projects">
+                    <span>Projects</span>
+                </a>
+            </li>
+            <li>
+                <a href="//localhost:1313/posts/" title="Writing">
+                    <span>Writing</span>
+                </a>
+            </li>
+            <li>
+                <a href="//localhost:1313/about/" title="About">
+                    <span>About</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <nav class="breadcrumbs" role="navigation" aria-label="Breadcrumb">
+            <a href="/">Home</a>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+            <a href="/posts/">Posts</a>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+        <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+</nav>
+    <h1 class="post-title entry-hint-parent">
+      TF-M vs TF-A — When Do You Reach For Which?
+    </h1>
+    <div class="post-description">
+      TF-M is for Cortex-M microcontrollers, TF-A is for Cortex-A application processors. Different exception models, different attack surfaces, not interchangeable.
+    </div>
+    <div class="post-meta">
+
+<span title='2026-03-17 00:00:00 +0000 UTC'>March 17, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>Somesh Singh</span>
+
+</div>
+  </header> 
+  <div class="post-content md-content"><blockquote>
+<p>This is personal exploration on publicly available reference platforms; it does not represent the views or work of my employer.</p>
+</blockquote>
+<p><strong>Short answer:</strong> TF-M is for Cortex-M microcontrollers. TF-A is for Cortex-A application processors. The exception model on your silicon decides which one you run.</p>
+<p>People mix these up because both are called &ldquo;Trusted Firmware&rdquo; and both ship out of TrustedFirmware.org. They&rsquo;re not interchangeable.</p>
+<p><img alt="TF-M vs TF-A architecture comparison" loading="lazy" src="/images/tf-m-vs-tf-a.svg"></p>
+<h2 id="tf-m-trusted-firmware-m">TF-M (Trusted Firmware-M)<a hidden class="anchor" aria-hidden="true" href="#tf-m-trusted-firmware-m">#</a></h2>
+<p>Cortex-M class silicon with Armv8-M TrustZone. There are no exception levels — instead the SAU and IDAU split the address space into Secure and Non-Secure regions. TF-M runs as the SPE. The application runs as NSPE and crosses into the SPE through NSC veneers, gated by the SG instruction.</p>
+<p>Footprint is tens of KB. Ships with PSA Crypto, Internal Trusted Storage, and Initial Attestation as secure partitions. Lives on sensors, wearables, smart locks, anywhere an MCU runs an RTOS.</p>
+<h2 id="tf-a-trusted-firmware-a">TF-A (Trusted Firmware-A)<a hidden class="anchor" aria-hidden="true" href="#tf-a-trusted-firmware-a">#</a></h2>
+<p>Cortex-A class silicon with Armv8-A TrustZone. You get EL0 through EL3 as exception levels, an MMU, and a multi-stage boot chain:</p>
+<ul>
+<li><strong>BL1</strong> — immutable ROM, anchors the chain of trust</li>
+<li><strong>BL2</strong> — trusted boot loader, verifies the next stages</li>
+<li><strong>BL31</strong> — EL3 runtime, handles SMC calls and PSCI</li>
+<li><strong>BL32</strong> — secure payload, usually OP-TEE</li>
+<li><strong>BL33</strong> — non-secure bootloader, usually U-Boot or UEFI</li>
+</ul>
+<p>Footprint is megabytes. Lives on phones, automotive SoCs, gateways, anywhere Linux runs in the normal world.</p>
+<h2 id="what-works">What works<a hidden class="anchor" aria-hidden="true" href="#what-works">#</a></h2>
+<p>Pick by the silicon. Armv8-M with SAU means TF-M. EL3 means TF-A. If your SoC has both an A-class cluster and an M-class security island — common in automotive and some gateways — you&rsquo;ll run both. They cooperate. They don&rsquo;t replace each other.</p>
+<h2 id="honest-tradeoffs">Honest tradeoffs<a hidden class="anchor" aria-hidden="true" href="#honest-tradeoffs">#</a></h2>
+<p>TF-M is small but isolation is coarser. You&rsquo;re working inside an MPU and SAU, not an MMU with proper privilege levels. TF-A gives you a real secure OS and full privilege separation, but the five-stage boot is not free in either complexity or RAM.</p>
+<p>Same family, different worlds.</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="//localhost:1313/tags/quick-take/">Quick Take</a></li>
+      <li><a href="//localhost:1313/tags/tf-m/">TF-M</a></li>
+      <li><a href="//localhost:1313/tags/tf-a/">TF-A</a></li>
+      <li><a href="//localhost:1313/tags/trustzone/">TrustZone</a></li>
+      <li><a href="//localhost:1313/tags/trusted-firmware/">Trusted Firmware</a></li>
+      <li><a href="//localhost:1313/tags/arm/">ARM</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="next" href="//localhost:1313/posts/do-i-need-a-secure-element-with-a-crypto-accelerator/">
+    <span class="title">Next »</span>
+    <span>Do I Need a Secure Element If My MCU Has a Crypto Accelerator?</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2025 CodetoCore</span> · 
+
+    
+    
+    <span>
+        Powered by
+        <a href="https://gohugo.io/?utm_source=papermod" rel="noopener" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" id="top-link" class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up">
+        <polyline points="17 11 12 6 7 11"></polyline>
+        <polyline points="17 18 12 13 7 18"></polyline>
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var toplink = document.getElementById("top-link");
+    window.onscroll = function () {
+        const scrollThreshold = window.innerHeight;
+        if (document.body.scrollTop > scrollThreshold || document.documentElement.scrollTop > scrollThreshold) {
+            toplink.classList.remove("hidden");
+        } else {
+            toplink.classList.add("hidden");
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

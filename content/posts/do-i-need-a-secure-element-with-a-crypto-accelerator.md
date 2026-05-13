@@ -4,13 +4,12 @@ date: 2026-03-15
 draft: false
 tags: ["Quick Take", "Cryptography", "Secure Element", "ECC", "HRoT", "Embedded Security"]
 categories: ["Embedded Security"]
-description: "Short answer: they solve different problems. A crypto accelerator makes crypto operations fast. A secure element makes sure your keys never leave the chip."
+description: "Short answer: they solve different problems. A crypto accelerator makes crypto operations fast. A secure element makes sure your keys never leave the chip. You usually want both, for different reasons."
 summary: "Why a hardware accelerator and a secure element aren't substitutes for each other, when one is enough, and when you actually want both."
 ShowToc: false
 ShowReadingTime: true
 ---
 
-Short answer: they solve different problems. A crypto accelerator makes crypto operations fast. A secure element makes sure your keys never leave the chip. You usually want both, for different reasons.
 
 **What a crypto accelerator gives you:**
 Speed. AES, SHA, ECC, RSA in hardware instead of software, often 10–100× faster. The CPU triggers the operation, the hardware engine does the math, the result comes back. That's it.

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>ECC on CodetoCore</title>
+    <link>//localhost:1313/tags/ecc/</link>
+    <description>Recent content in ECC on CodetoCore</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <copyright>2025 CodetoCore</copyright>
+    <lastBuildDate>Wed, 13 May 2026 07:10:04 +0530</lastBuildDate>
+    <atom:link href="//localhost:1313/tags/ecc/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Do I Need a Secure Element If My MCU Has a Crypto Accelerator?</title>
+      <link>//localhost:1313/posts/do-i-need-a-secure-element-with-a-crypto-accelerator/</link>
+      <pubDate>Sun, 15 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>//localhost:1313/posts/do-i-need-a-secure-element-with-a-crypto-accelerator/</guid>
+      <description>Short answer: they solve different problems. A crypto accelerator makes crypto operations fast. A secure element makes sure your keys never leave the chip.</description>
+    </item>
+  </channel>
+</rss>

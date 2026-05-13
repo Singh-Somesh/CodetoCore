@@ -7,8 +7,15 @@
     <generator>Hugo</generator>
     <language>en-us</language>
     <copyright>2025 CodetoCore</copyright>
-    <lastBuildDate>Tue, 12 May 2026 11:44:30 +0530</lastBuildDate>
+    <lastBuildDate>Wed, 13 May 2026 06:58:16 +0530</lastBuildDate>
     <atom:link href="//localhost:1313/tags/arm/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>TF-M vs TF-A — When Do You Reach For Which?</title>
+      <link>//localhost:1313/posts/tf-m-vs-tf-a/</link>
+      <pubDate>Tue, 17 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>//localhost:1313/posts/tf-m-vs-tf-a/</guid>
+      <description>TF-M is for Cortex-M microcontrollers, TF-A is for Cortex-A application processors. Different exception models, different attack surfaces, not interchangeable.</description>
+    </item>
     <item>
       <title>What TrustZone-M Adds to Your Build</title>
       <link>//localhost:1313/posts/what-trustzone-m-adds-to-your-build/</link>

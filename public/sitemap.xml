@@ -3,54 +3,84 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>//localhost:1313/</loc>
-    <lastmod>2026-05-12T12:36:14+05:30</lastmod>
+    <lastmod>2026-05-13T07:10:04+05:30</lastmod>
   </url><url>
     <loc>//localhost:1313/projects/</loc>
     <lastmod>2026-05-12T12:01:29+05:30</lastmod>
   </url><url>
+    <loc>//localhost:1313/tags/arm/</loc>
+    <lastmod>2026-05-13T06:58:16+05:30</lastmod>
+  </url><url>
     <loc>//localhost:1313/categories/</loc>
-    <lastmod>2026-05-12T12:36:14+05:30</lastmod>
+    <lastmod>2026-05-13T07:10:04+05:30</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/cortex-m/</loc>
-    <lastmod>2026-05-12T12:36:14+05:30</lastmod>
-  </url><url>
-    <loc>//localhost:1313/categories/embedded-engineering/</loc>
-    <lastmod>2026-05-12T12:36:14+05:30</lastmod>
-  </url><url>
-    <loc>//localhost:1313/tags/firmware/</loc>
-    <lastmod>2026-05-12T12:36:14+05:30</lastmod>
-  </url><url>
-    <loc>//localhost:1313/posts/is-systick-accurate-for-microsecond-timing/</loc>
-    <lastmod>2026-05-12T12:36:14+05:30</lastmod>
+    <loc>//localhost:1313/categories/embedded-security/</loc>
+    <lastmod>2026-05-13T07:10:04+05:30</lastmod>
   </url><url>
     <loc>//localhost:1313/posts/</loc>
-    <lastmod>2026-05-12T12:36:14+05:30</lastmod>
+    <lastmod>2026-05-13T07:10:04+05:30</lastmod>
   </url><url>
     <loc>//localhost:1313/tags/quick-take/</loc>
+    <lastmod>2026-05-13T07:10:04+05:30</lastmod>
+  </url><url>
+    <loc>//localhost:1313/tags/</loc>
+    <lastmod>2026-05-13T07:10:04+05:30</lastmod>
+  </url><url>
+    <loc>//localhost:1313/tags/tf-a/</loc>
+    <lastmod>2026-03-17T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>//localhost:1313/tags/tf-m/</loc>
+    <lastmod>2026-03-17T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>//localhost:1313/posts/tf-m-vs-tf-a/</loc>
+    <lastmod>2026-03-17T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>//localhost:1313/tags/trusted-firmware/</loc>
+    <lastmod>2026-03-17T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>//localhost:1313/tags/trustzone/</loc>
+    <lastmod>2026-03-17T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>//localhost:1313/tags/cryptography/</loc>
+    <lastmod>2026-05-13T07:10:04+05:30</lastmod>
+  </url><url>
+    <loc>//localhost:1313/posts/do-i-need-a-secure-element-with-a-crypto-accelerator/</loc>
+    <lastmod>2026-05-13T07:10:04+05:30</lastmod>
+  </url><url>
+    <loc>//localhost:1313/tags/ecc/</loc>
+    <lastmod>2026-05-13T07:10:04+05:30</lastmod>
+  </url><url>
+    <loc>//localhost:1313/tags/embedded-security/</loc>
+    <lastmod>2026-05-13T07:10:04+05:30</lastmod>
+  </url><url>
+    <loc>//localhost:1313/tags/hrot/</loc>
+    <lastmod>2026-05-13T07:10:04+05:30</lastmod>
+  </url><url>
+    <loc>//localhost:1313/tags/secure-element/</loc>
+    <lastmod>2026-05-13T07:10:04+05:30</lastmod>
+  </url><url>
+    <loc>//localhost:1313/tags/cortex-m/</loc>
+    <lastmod>2026-05-13T06:58:16+05:30</lastmod>
+  </url><url>
+    <loc>//localhost:1313/categories/embedded-engineering/</loc>
+    <lastmod>2026-05-13T06:58:16+05:30</lastmod>
+  </url><url>
+    <loc>//localhost:1313/tags/firmware/</loc>
+    <lastmod>2026-05-13T06:58:16+05:30</lastmod>
+  </url><url>
+    <loc>//localhost:1313/posts/is-systick-accurate-for-microsecond-timing/</loc>
     <lastmod>2026-05-12T12:36:14+05:30</lastmod>
   </url><url>
     <loc>//localhost:1313/tags/systick/</loc>
     <lastmod>2026-05-12T12:36:14+05:30</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/</loc>
-    <lastmod>2026-05-12T12:36:14+05:30</lastmod>
-  </url><url>
     <loc>//localhost:1313/tags/timing/</loc>
     <lastmod>2026-05-12T12:36:14+05:30</lastmod>
-  </url><url>
-    <loc>//localhost:1313/tags/arm/</loc>
-    <lastmod>2026-05-12T11:44:30+05:30</lastmod>
   </url><url>
     <loc>//localhost:1313/tags/cortex-m23/</loc>
     <lastmod>2026-05-12T11:44:30+05:30</lastmod>
   </url><url>
     <loc>//localhost:1313/tags/cortex-m33/</loc>
-    <lastmod>2026-05-12T11:44:30+05:30</lastmod>
-  </url><url>
-    <loc>//localhost:1313/categories/embedded-security/</loc>
-    <lastmod>2026-05-12T11:44:30+05:30</lastmod>
-  </url><url>
-    <loc>//localhost:1313/tags/embedded-security/</loc>
     <lastmod>2026-05-12T11:44:30+05:30</lastmod>
   </url><url>
     <loc>//localhost:1313/tags/secure-boot/</loc>
@@ -69,13 +99,10 @@
     <lastmod>2026-05-12T12:36:14+05:30</lastmod>
   </url><url>
     <loc>//localhost:1313/tags/embedded/</loc>
-    <lastmod>2026-05-12T12:36:14+05:30</lastmod>
+    <lastmod>2026-05-13T06:58:16+05:30</lastmod>
   </url><url>
     <loc>//localhost:1313/posts/debug-works-release-breaks/</loc>
     <lastmod>2026-05-12T12:36:14+05:30</lastmod>
-  </url><url>
-    <loc>//localhost:1313/tags/cryptography/</loc>
-    <lastmod>2026-05-10T09:30:35+05:30</lastmod>
   </url><url>
     <loc>//localhost:1313/posts/hardware-root-of-trust-explained/</loc>
     <lastmod>2026-05-10T09:30:35+05:30</lastmod>
@@ -96,10 +123,10 @@
     <lastmod>2026-05-11T03:19:23+05:30</lastmod>
   </url><url>
     <loc>//localhost:1313/tags/startup/</loc>
-    <lastmod>2025-05-03T00:00:00+00:00</lastmod>
+    <lastmod>2026-05-13T06:58:16+05:30</lastmod>
   </url><url>
     <loc>//localhost:1313/posts/what-happens-before-main-runs/</loc>
-    <lastmod>2025-05-03T00:00:00+00:00</lastmod>
+    <lastmod>2026-05-13T06:58:16+05:30</lastmod>
   </url><url>
     <loc>//localhost:1313/about/</loc>
     <lastmod>2026-05-11T02:58:31+05:30</lastmod>
