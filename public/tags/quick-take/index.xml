@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Quick Take on CodetoCore</title>
+    <link>//localhost:1313/tags/quick-take/</link>
+    <description>Recent content in Quick Take on CodetoCore</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <copyright>2025 CodetoCore</copyright>
+    <lastBuildDate>Tue, 12 May 2026 12:36:14 +0530</lastBuildDate>
+    <atom:link href="//localhost:1313/tags/quick-take/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Is SysTick Accurate Enough for Microsecond Timing?</title>
+      <link>//localhost:1313/posts/is-systick-accurate-for-microsecond-timing/</link>
+      <pubDate>Thu, 12 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>//localhost:1313/posts/is-systick-accurate-for-microsecond-timing/</guid>
+      <description>Short answer: the counter is. Everything around it usually isn&amp;#39;t.</description>
+    </item>
+    <item>
+      <title>Why Does My Code Work in Debug But Break in Release?</title>
+      <link>//localhost:1313/posts/debug-works-release-breaks/</link>
+      <pubDate>Tue, 23 Sep 2025 00:00:00 +0000</pubDate>
+      <guid>//localhost:1313/posts/debug-works-release-breaks/</guid>
+      <description>Short answer: optimization isn&amp;#39;t doing the wrong thing. Your code was always wrong — debug builds just happened to hide it.</description>
+    </item>
+    <item>
+      <title>What Actually Happens Before main() Runs?</title>
+      <link>//localhost:1313/posts/what-happens-before-main-runs/</link>
+      <pubDate>Sat, 03 May 2025 00:00:00 +0000</pubDate>
+      <guid>//localhost:1313/posts/what-happens-before-main-runs/</guid>
+      <description>A lot. The CPU walks through six setup stages between power-up and your first line of C — and bugs in any of them look very different from each other.</description>
+    </item>
+  </channel>
+</rss>

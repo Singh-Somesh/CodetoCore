@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Why Your Secure Boot Probably Isn&#39;t Actually Secure | CodetoCore</title>
+<meta name="keywords" content="secure-boot, embedded-security, hardware-root-of-trust, threat-modeling">
+<meta name="description" content="Most secure boot implementations look fine on paper but fail under realistic threat models. Eight common pitfalls — and what fixing them requires.">
+<meta name="author" content="Somesh Singh">
+<link rel="canonical" href="//localhost:1313/posts/secure-boot-pitfalls/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7a73f6d22832740d3b34a080c56bbd1c5eae5d07a4fb24abad905861b132c9dd.css" integrity="sha256-enP20igydA07NKCAxWu9HF6uXQek&#43;ySrrZBYYbEyyd0=" rel="preload stylesheet" as="style">
+<link rel="icon" href="//localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="//localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="//localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="//localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="//localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="//localhost:1313/posts/secure-boot-pitfalls/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><meta property="og:url" content="//localhost:1313/posts/secure-boot-pitfalls/">
+  <meta property="og:site_name" content="CodetoCore">
+  <meta property="og:title" content="Why Your Secure Boot Probably Isn&#39;t Actually Secure">
+  <meta property="og:description" content="Most secure boot implementations look fine on paper but fail under realistic threat models. Eight common pitfalls — and what fixing them requires.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2025-05-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-05-11T03:19:23+05:30">
+    <meta property="article:tag" content="Secure-Boot">
+    <meta property="article:tag" content="Embedded Security">
+    <meta property="article:tag" content="Hardware-Root-of-Trust">
+    <meta property="article:tag" content="Threat-Modeling">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Why Your Secure Boot Probably Isn&#39;t Actually Secure">
+  <meta name="twitter:description" content="Most secure boot implementations look fine on paper but fail under realistic threat models. Eight common pitfalls — and what fixing them requires.">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "//localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Why Your Secure Boot Probably Isn't Actually Secure",
+      "item": "//localhost:1313/posts/secure-boot-pitfalls/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Why Your Secure Boot Probably Isn't Actually Secure",
+  "name": "Why Your Secure Boot Probably Isn\u0027t Actually Secure",
+  "description": "Most secure boot implementations look fine on paper but fail under realistic threat models. Eight common pitfalls — and what fixing them requires.",
+  "keywords": [
+    "secure-boot", "embedded-security", "hardware-root-of-trust", "threat-modeling"
+  ],
+  "articleBody": "Secure boot is one of those features that’s easy to claim and hard to verify. A device that signs and verifies images appears to have it. But under a realistic threat model, the difference between “we implement secure boot” and “an attacker can’t replace our boot chain” can be larger than expected.\nThis post walks through eight common pitfalls in secure boot implementations — patterns that can quietly undermine the security property even when the basic mechanics work. None are exotic. All are worth thinking through before shipping a product that depends on boot-time trust.\nIf you’re working on a secure boot design, this is a useful checklist to walk through. If you’re reviewing one, these are the questions to ask.\nWhat “secure boot” actually has to guarantee Before the pitfalls, the bar. A working secure boot implementation should guarantee one thing:\nThe code running after reset is the code the manufacturer authorized, and an attacker — even one with physical access — cannot replace it with their own code.\nThat’s the property. Every component of secure boot exists to make that statement hold up. If any link in the chain is breakable, the property doesn’t hold, and the system has a feature that signs and verifies images without delivering the underlying guarantee.\nThe chain typically has three parts:\nRoot of trust — an immutable hardware-anchored element that holds or hashes the public key used to verify boot images Boot ROM verification — silicon-resident code that checks the first-stage bootloader against the root key before executing it Chain of trust — each subsequent stage cryptographically verifies the next stage before transferring control Each pitfall below relates to one of these three.\nPitfall 1: Production fuses never get burned This is probably the most common gap, and the one that’s easiest to overlook in development.\nMost modern microcontrollers have secure boot capability that relies on one-time-programmable (OTP) fuses to lock the device into secure mode. The flow goes:\nGenerate signing keys Compute the public key hash Write the hash into OTP fuses (irreversible) Burn a “production mode” fuse that disables debug, JTAG, and unsigned boot paths In development, steps 3 and 4 are skipped. The device runs in “test mode” — secure boot logic appears to work because images are signed and the bootloader checks signatures, but without the fuses set, those checks can typically be bypassed. Test mode often allows:\nLoading unsigned firmware via JTAG Disabling secure boot at runtime Reading firmware regardless of read-protection settings It’s easy to ship in test mode without realizing it, especially if the manufacturing flow doesn’t include explicit fuse-burning steps. The result is a device where signature verification runs but doesn’t actually enforce anything.\nWhat works: Burn production fuses on every unit before it leaves the factory. Make this a hard gate in the manufacturing flow. Verify it on every unit during final test.\nThe honest tradeoff: Burning fuses is irreversible. If firmware is buggy and bricks devices, recovery isn’t possible. This is a real cost. The choice between “recoverable insecure devices” and “non-recoverable secure devices” is a real business decision — worth documenting explicitly when made.\nPitfall 2: Debug interfaces left enabled Closely related: even with fuses burned, JTAG, SWD, and ETM interfaces are often left active. The usual reasoning: “we need it for field debugging” or “production test still needs it.”\nA live debug interface on a device claiming secure boot weakens the security property significantly. With JTAG access, an attacker can:\nHalt the CPU at any point and inject code Read memory contents (including keys derived at runtime) Modify program flow to skip signature checks Set breakpoints inside the verification routine itself A secure bootloader that can be paused and patched mid-execution doesn’t provide the protection the design intends.\nWhat works: Disable debug interfaces in production via OTP fuses. Use authenticated debug protocols (such as ARM Authenticated Debug Access Port, ADAC) when field debug is a real requirement. Avoid “JTAG locking” via firmware-controlled GPIOs — those can be defeated by glitching or physical bypass.\nPitfall 3: Signing keys stored insecurely Secure boot rests on the assumption that the private signing key is, in fact, private. There are several common ways this assumption can break:\nKeys committed to git history (often “for testing” then never removed) Keys stored on a developer’s laptop Keys in CI/CD environment variables that broad teams can read Keys in shared password managers Keys printed in build logs that get archived If any of these happens, the root of trust is compromised — anyone with access can produce firmware the device will accept.\nWhat works: Production signing keys should live in a Hardware Security Module (HSM). The signing operation happens on the HSM; the key never leaves it. Build pipelines submit images to a signing service that fronts the HSM, with audit logs and access controls.\nThis is operationally heavier than keeping a signing_key.pem on the build server. That weight is the cost of an actual root of trust.\nPitfall 4: The “verify” step doesn’t verify what you’d expect Verification logic can fail in non-obvious ways. Common patterns to watch for:\nComputing a CRC32 (not a cryptographic hash) and treating it as verification Computing SHA-256 but never checking the signature, just the hash Verifying the signature against a key embedded in the image being verified Verifying the signature, then discarding the result and continuing regardless These are easy to miss in practice — here’s how they typically slip through:\nThe original implementation has verify_image() returning success by default, and the “fail” branch never fully gets implemented A refactor moves the verify call before the key is loaded A debug #define that bypasses verification gets left in production builds What works: Test the failure path explicitly. Build firmware with an intentionally invalid signature, attempt to boot it, and confirm the device refuses. This single test catches more secure boot bugs than code review alone. Run it on every release as a CI gate.\nPitfall 5: Time-of-Check to Time-of-Use (TOCTOU) bugs The bootloader verifies the image at address X, then jumps to the image at address X. Sounds fine. But on systems where flash is mapped to memory and DMA is active, an attacker with hardware access can:\nWait for the bootloader to start verification Use a glitch attack or bus interposer to swap memory contents during verification, or between verification and jump The bootloader verifies the original image, then executes a swapped image This is the TOCTOU class of attacks. It’s rare in opportunistic attacks but relevant for high-value targets — set-top boxes, game consoles, and payment terminals have all been broken this way.\nWhat works: Copy the verified image to a memory region the attacker can’t modify (typically internal SRAM with appropriate access controls), then verify and execute from there. Or use silicon features like execute-only memory and integrity protection. This costs RAM, which is why it’s often skipped — and why threat models matter.\nPitfall 6: No anti-rollback protection Firmware v1.0 has a critical vulnerability. The vendor ships v1.1 to patch it. An attacker downgrades the device to v1.0 and exploits the known bug.\nThis is rollback, and without explicit protection, secure boot implementations are vulnerable to it.\nThe fix is conceptually simple: maintain a monotonic counter (in OTP fuses, replay-protected memory, or a secure element) of the minimum acceptable firmware version. The bootloader rejects any image with a lower version number than the counter.\nThe implementation is harder:\nThe counter has to be incremented atomically with firmware installation, or units can get bricked The counter has to be in storage that survives flash erasure but can’t be easily forged Old firmware images with valid signatures and lower version numbers remain in the wild and have to be invalidated This is hard to retrofit. Ideally it’s designed in from day one.\nWhat works: Build rollback protection into the bootloader from the start. Use OTP-based version counters where available. Test downgrade attacks explicitly — flash a v2 firmware, then try to flash signed v1, and confirm the device rejects it.\nPitfall 7: Glitch attacks aren’t considered Voltage glitching, clock glitching, and electromagnetic fault injection let an attacker skip arbitrary instructions during boot — including the “if signature invalid, halt” instruction. With a few hundred dollars of equipment and patience, fairly hardened bootloaders can be defeated this way.\nMany secure boot implementations don’t consider glitch attacks because:\nThe threat model assumes “firmware-only” attackers Hardware-level attacks are harder to test for than software ones Glitch resistance requires specific code patterns and isn’t free What works: This depends on the threat model. For a smart bulb, glitch resistance might not be needed. For an automotive ECU or a payment terminal, it usually is. Design choices that help:\nVerify signatures multiple times with different code paths Use redundant flag variables (e.g., authenticated == 0xA5A55A5A, unauthenticated == 0x00000000) so a single bit-flip doesn’t change the outcome Use silicon glitch detection where available Include explicit delays and integrity checks in critical paths The important step is stating the threat model honestly. If glitch attacks are out of scope, that’s a valid design decision — as long as it’s documented and the security claim is framed accordingly.\nPitfall 8: The chain stops at the first stage Some products implement “secure boot” by having the boot ROM verify the first-stage bootloader. The first-stage bootloader then loads the kernel or application without verification.\nThis leaves the chain half-finished. The attacker simply modifies whatever the first-stage bootloader loads next.\nA complete chain of trust has every stage verifying the next:\nBoot ROM verifies → First-stage bootloader First-stage bootloader verifies → Second-stage bootloader Second-stage bootloader verifies → Secure monitor (TF-A) Secure monitor verifies → TEE (OP-TEE) TEE verifies → Non-secure bootloader Non-secure bootloader verifies → Kernel Every step is a signature verification. Skip any one, and the chain is broken at that point and below.\nWhat works: Audit the boot chain. Document every stage, what verifies the next, with what key, against what policy. Where verification is missing, add it. A chain with gaps doesn’t provide end-to-end protection.\nWhat to do about all this Three practical steps for verifying secure boot rather than assuming:\n1. Threat-model the boot flow. Write down every stage, every key, every assumption. Then ask: what does an attacker with physical access, firmware-only access, and remote access need to do at each stage to break the chain? Gaps tend to surface quickly.\n2. Test the failure paths. Build deliberately broken firmware (invalid signature, modified payload, downgraded version) and confirm the device refuses every variation. Make these CI tests.\n3. Document residual risk honestly. Some pitfalls are expensive to fix. Documenting the ones not addressed — and why — is more useful than blanket claims. “We don’t protect against glitch attacks because our threat model excludes attackers with hardware access” is a valid statement. “We have secure boot” without that qualifier is incomplete.\nThe principle worth remembering Secure boot isn’t a feature that gets turned on. It’s a property of the system that has to be designed, implemented, tested, and verified at every layer — silicon, bootloader, build pipeline, manufacturing, field operations.\nWhen secure boot doesn’t deliver on its promise, it’s usually because the obvious 60% got implemented and the remaining 40% — the failure modes, the operational discipline, the threat model honesty — was treated as out of scope or “we’ll get to it later.”\nTreating secure boot as a checkbox produces something that looks like secure boot. Treating it as a property to be continuously verified produces the actual thing.\n",
+  "wordCount" : "1926",
+  "inLanguage": "en",
+  "datePublished": "2025-05-10T00:00:00Z",
+  "dateModified": "2026-05-11T03:19:23+05:30",
+  "author":{
+    "@type": "Person",
+    "name": "Somesh Singh"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "//localhost:1313/posts/secure-boot-pitfalls/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CodetoCore",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "//localhost:1313/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="header-nav">
+        <div class="logo">
+            <a href="//localhost:1313/" accesskey="h" title="CodetoCore (Alt + H)">CodetoCore</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" class="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu" class="menu">
+            <li>
+                <a href="//localhost:1313/projects/" title="Projects">
+                    <span>Projects</span>
+                </a>
+            </li>
+            <li>
+                <a href="//localhost:1313/posts/" title="Writing">
+                    <span>Writing</span>
+                </a>
+            </li>
+            <li>
+                <a href="//localhost:1313/about/" title="About">
+                    <span>About</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <nav class="breadcrumbs" role="navigation" aria-label="Breadcrumb">
+            <a href="/">Home</a>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+            <a href="/posts/">Posts</a>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+        <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+</nav>
+    <h1 class="post-title entry-hint-parent">
+      Why Your Secure Boot Probably Isn&#39;t Actually Secure
+    </h1>
+    <div class="post-description">
+      Most secure boot implementations look fine on paper but fail under realistic threat models. Eight common pitfalls — and what fixing them requires.
+    </div>
+    <div class="post-meta">
+
+<span title='2025-05-10 00:00:00 +0000 UTC'>May 10, 2025</span>&nbsp;·&nbsp;<span>10 min</span>&nbsp;·&nbsp;<span>Somesh Singh</span>
+
+</div>
+  </header> <details class="toc" >
+    <summary accesskey="c" title="(Alt + C)">
+        <span class="title">Table of Contents</span>
+    </summary>
+
+    <div class="inner"><ul>
+            <li>
+                <a href="#what-secure-boot-actually-has-to-guarantee" aria-label="What &ldquo;secure boot&rdquo; actually has to guarantee">What &ldquo;secure boot&rdquo; actually has to guarantee</a></li>
+            <li>
+                <a href="#pitfall-1-production-fuses-never-get-burned" aria-label="Pitfall 1: Production fuses never get burned">Pitfall 1: Production fuses never get burned</a></li>
+            <li>
+                <a href="#pitfall-2-debug-interfaces-left-enabled" aria-label="Pitfall 2: Debug interfaces left enabled">Pitfall 2: Debug interfaces left enabled</a></li>
+            <li>
+                <a href="#pitfall-3-signing-keys-stored-insecurely" aria-label="Pitfall 3: Signing keys stored insecurely">Pitfall 3: Signing keys stored insecurely</a></li>
+            <li>
+                <a href="#pitfall-4-the-verify-step-doesnt-verify-what-youd-expect" aria-label="Pitfall 4: The &ldquo;verify&rdquo; step doesn&rsquo;t verify what you&rsquo;d expect">Pitfall 4: The &ldquo;verify&rdquo; step doesn&rsquo;t verify what you&rsquo;d expect</a></li>
+            <li>
+                <a href="#pitfall-5-time-of-check-to-time-of-use-toctou-bugs" aria-label="Pitfall 5: Time-of-Check to Time-of-Use (TOCTOU) bugs">Pitfall 5: Time-of-Check to Time-of-Use (TOCTOU) bugs</a></li>
+            <li>
+                <a href="#pitfall-6-no-anti-rollback-protection" aria-label="Pitfall 6: No anti-rollback protection">Pitfall 6: No anti-rollback protection</a></li>
+            <li>
+                <a href="#pitfall-7-glitch-attacks-arent-considered" aria-label="Pitfall 7: Glitch attacks aren&rsquo;t considered">Pitfall 7: Glitch attacks aren&rsquo;t considered</a></li>
+            <li>
+                <a href="#pitfall-8-the-chain-stops-at-the-first-stage" aria-label="Pitfall 8: The chain stops at the first stage">Pitfall 8: The chain stops at the first stage</a></li>
+            <li>
+                <a href="#what-to-do-about-all-this" aria-label="What to do about all this">What to do about all this</a></li>
+            <li>
+                <a href="#the-principle-worth-remembering" aria-label="The principle worth remembering">The principle worth remembering</a>
+            </li>
+        </ul>
+    </div>
+</details>
+
+  <div class="post-content md-content"><p>Secure boot is one of those features that&rsquo;s easy to claim and hard to
+verify. A device that signs and verifies images appears to have it.
+But under a realistic threat model, the difference between &ldquo;we
+implement secure boot&rdquo; and &ldquo;an attacker can&rsquo;t replace our boot chain&rdquo;
+can be larger than expected.</p>
+<p>This post walks through eight common pitfalls in secure boot
+implementations — patterns that can quietly undermine the security
+property even when the basic mechanics work. None are exotic. All are
+worth thinking through before shipping a product that depends on
+boot-time trust.</p>
+<p>If you&rsquo;re working on a secure boot design, this is a useful checklist
+to walk through. If you&rsquo;re reviewing one, these are the questions to
+ask.</p>
+<h2 id="what-secure-boot-actually-has-to-guarantee">What &ldquo;secure boot&rdquo; actually has to guarantee<a hidden class="anchor" aria-hidden="true" href="#what-secure-boot-actually-has-to-guarantee">#</a></h2>
+<p>Before the pitfalls, the bar. A working secure boot implementation
+should guarantee one thing:</p>
+<blockquote>
+<p>The code running after reset is the code the manufacturer
+authorized, and an attacker — even one with physical access —
+cannot replace it with their own code.</p>
+</blockquote>
+<p>That&rsquo;s the property. Every component of secure boot exists to make
+that statement hold up. If any link in the chain is breakable, the
+property doesn&rsquo;t hold, and the system has a feature that signs and
+verifies images without delivering the underlying guarantee.</p>
+<p>The chain typically has three parts:</p>
+<ol>
+<li><strong>Root of trust</strong> — an immutable hardware-anchored element that
+holds or hashes the public key used to verify boot images</li>
+<li><strong>Boot ROM verification</strong> — silicon-resident code that checks the
+first-stage bootloader against the root key before executing it</li>
+<li><strong>Chain of trust</strong> — each subsequent stage cryptographically
+verifies the next stage before transferring control</li>
+</ol>
+<p>Each pitfall below relates to one of these three.</p>
+<h2 id="pitfall-1-production-fuses-never-get-burned">Pitfall 1: Production fuses never get burned<a hidden class="anchor" aria-hidden="true" href="#pitfall-1-production-fuses-never-get-burned">#</a></h2>
+<p>This is probably the most common gap, and the one that&rsquo;s easiest to
+overlook in development.</p>
+<p>Most modern microcontrollers have secure boot capability that relies
+on <strong>one-time-programmable (OTP) fuses</strong> to lock the device into
+secure mode. The flow goes:</p>
+<ol>
+<li>Generate signing keys</li>
+<li>Compute the public key hash</li>
+<li>Write the hash into OTP fuses (irreversible)</li>
+<li>Burn a &ldquo;production mode&rdquo; fuse that disables debug, JTAG, and
+unsigned boot paths</li>
+</ol>
+<p>In development, steps 3 and 4 are skipped. The device runs in &ldquo;test
+mode&rdquo; — secure boot logic <em>appears</em> to work because images are signed
+and the bootloader checks signatures, but <strong>without the fuses set,
+those checks can typically be bypassed</strong>. Test mode often allows:</p>
+<ul>
+<li>Loading unsigned firmware via JTAG</li>
+<li>Disabling secure boot at runtime</li>
+<li>Reading firmware regardless of read-protection settings</li>
+</ul>
+<p>It&rsquo;s easy to ship in test mode without realizing it, especially if
+the manufacturing flow doesn&rsquo;t include explicit fuse-burning steps.
+The result is a device where signature verification runs but doesn&rsquo;t
+actually enforce anything.</p>
+<p><strong>What works:</strong> Burn production fuses on every unit before it leaves
+the factory. Make this a hard gate in the manufacturing flow. Verify
+it on every unit during final test.</p>
+<p><strong>The honest tradeoff:</strong> Burning fuses is irreversible. If firmware
+is buggy and bricks devices, recovery isn&rsquo;t possible. This is a real
+cost. The choice between &ldquo;recoverable insecure devices&rdquo; and
+&ldquo;non-recoverable secure devices&rdquo; is a real business decision — worth
+documenting explicitly when made.</p>
+<h2 id="pitfall-2-debug-interfaces-left-enabled">Pitfall 2: Debug interfaces left enabled<a hidden class="anchor" aria-hidden="true" href="#pitfall-2-debug-interfaces-left-enabled">#</a></h2>
+<p>Closely related: even with fuses burned, JTAG, SWD, and ETM
+interfaces are often left active. The usual reasoning: &ldquo;we need it
+for field debugging&rdquo; or &ldquo;production test still needs it.&rdquo;</p>
+<p>A live debug interface on a device claiming secure boot weakens the
+security property significantly. With JTAG access, an attacker can:</p>
+<ul>
+<li>Halt the CPU at any point and inject code</li>
+<li>Read memory contents (including keys derived at runtime)</li>
+<li>Modify program flow to skip signature checks</li>
+<li>Set breakpoints inside the verification routine itself</li>
+</ul>
+<p>A secure bootloader that can be paused and patched mid-execution
+doesn&rsquo;t provide the protection the design intends.</p>
+<p><strong>What works:</strong> Disable debug interfaces in production via OTP fuses.
+Use authenticated debug protocols (such as ARM Authenticated Debug
+Access Port, ADAC) when field debug is a real requirement. Avoid
+&ldquo;JTAG locking&rdquo; via firmware-controlled GPIOs — those can be defeated
+by glitching or physical bypass.</p>
+<h2 id="pitfall-3-signing-keys-stored-insecurely">Pitfall 3: Signing keys stored insecurely<a hidden class="anchor" aria-hidden="true" href="#pitfall-3-signing-keys-stored-insecurely">#</a></h2>
+<p>Secure boot rests on the assumption that the private signing key is,
+in fact, private. There are several common ways this assumption can
+break:</p>
+<ul>
+<li>Keys committed to git history (often &ldquo;for testing&rdquo; then never
+removed)</li>
+<li>Keys stored on a developer&rsquo;s laptop</li>
+<li>Keys in CI/CD environment variables that broad teams can read</li>
+<li>Keys in shared password managers</li>
+<li>Keys printed in build logs that get archived</li>
+</ul>
+<p>If any of these happens, the root of trust is compromised — anyone
+with access can produce firmware the device will accept.</p>
+<p><strong>What works:</strong> Production signing keys should live in a Hardware
+Security Module (HSM). The signing operation happens on the HSM; the
+key never leaves it. Build pipelines submit images to a signing
+service that fronts the HSM, with audit logs and access controls.</p>
+<p>This is operationally heavier than keeping a <code>signing_key.pem</code> on the
+build server. That weight is the cost of an actual root of trust.</p>
+<h2 id="pitfall-4-the-verify-step-doesnt-verify-what-youd-expect">Pitfall 4: The &ldquo;verify&rdquo; step doesn&rsquo;t verify what you&rsquo;d expect<a hidden class="anchor" aria-hidden="true" href="#pitfall-4-the-verify-step-doesnt-verify-what-youd-expect">#</a></h2>
+<p>Verification logic can fail in non-obvious ways. Common patterns to
+watch for:</p>
+<ul>
+<li>Computing a CRC32 (not a cryptographic hash) and treating it as
+verification</li>
+<li>Computing SHA-256 but never checking the signature, just the hash</li>
+<li>Verifying the signature against a key embedded in the image being
+verified</li>
+<li>Verifying the signature, then <em>discarding the result</em> and
+continuing regardless</li>
+</ul>
+<p>These are easy to miss in practice — here&rsquo;s how they typically slip
+through:</p>
+<ul>
+<li>The original implementation has <code>verify_image()</code> returning success
+by default, and the &ldquo;fail&rdquo; branch never fully gets implemented</li>
+<li>A refactor moves the verify call before the key is loaded</li>
+<li>A debug <code>#define</code> that bypasses verification gets left in
+production builds</li>
+</ul>
+<p><strong>What works:</strong> Test the failure path explicitly. Build firmware with
+an intentionally invalid signature, attempt to boot it, and confirm
+the device refuses. This single test catches more secure boot bugs
+than code review alone. Run it on every release as a CI gate.</p>
+<h2 id="pitfall-5-time-of-check-to-time-of-use-toctou-bugs">Pitfall 5: Time-of-Check to Time-of-Use (TOCTOU) bugs<a hidden class="anchor" aria-hidden="true" href="#pitfall-5-time-of-check-to-time-of-use-toctou-bugs">#</a></h2>
+<p>The bootloader verifies the image at address X, then jumps to the
+image at address X. Sounds fine. But on systems where flash is mapped
+to memory and DMA is active, an attacker with hardware access can:</p>
+<ol>
+<li>Wait for the bootloader to start verification</li>
+<li>Use a glitch attack or bus interposer to swap memory contents
+during verification, or between verification and jump</li>
+<li>The bootloader verifies the original image, then executes a
+swapped image</li>
+</ol>
+<p>This is the TOCTOU class of attacks. It&rsquo;s rare in opportunistic
+attacks but relevant for high-value targets — set-top boxes, game
+consoles, and payment terminals have all been broken this way.</p>
+<p><strong>What works:</strong> Copy the verified image to a memory region the
+attacker can&rsquo;t modify (typically internal SRAM with appropriate
+access controls), then verify and execute from there. Or use silicon
+features like execute-only memory and integrity protection. This
+costs RAM, which is why it&rsquo;s often skipped — and why threat models
+matter.</p>
+<h2 id="pitfall-6-no-anti-rollback-protection">Pitfall 6: No anti-rollback protection<a hidden class="anchor" aria-hidden="true" href="#pitfall-6-no-anti-rollback-protection">#</a></h2>
+<p>Firmware v1.0 has a critical vulnerability. The vendor ships v1.1 to
+patch it. An attacker downgrades the device to v1.0 and exploits the
+known bug.</p>
+<p>This is rollback, and without explicit protection, secure boot
+implementations are vulnerable to it.</p>
+<p>The fix is conceptually simple: maintain a monotonic counter (in OTP
+fuses, replay-protected memory, or a secure element) of the minimum
+acceptable firmware version. The bootloader rejects any image with a
+lower version number than the counter.</p>
+<p>The implementation is harder:</p>
+<ul>
+<li>The counter has to be incremented atomically with firmware
+installation, or units can get bricked</li>
+<li>The counter has to be in storage that survives flash erasure but
+can&rsquo;t be easily forged</li>
+<li>Old firmware images with valid signatures and lower version numbers
+remain in the wild and have to be invalidated</li>
+</ul>
+<p>This is hard to retrofit. Ideally it&rsquo;s designed in from day one.</p>
+<p><strong>What works:</strong> Build rollback protection into the bootloader from
+the start. Use OTP-based version counters where available. Test
+downgrade attacks explicitly — flash a v2 firmware, then try to
+flash signed v1, and confirm the device rejects it.</p>
+<h2 id="pitfall-7-glitch-attacks-arent-considered">Pitfall 7: Glitch attacks aren&rsquo;t considered<a hidden class="anchor" aria-hidden="true" href="#pitfall-7-glitch-attacks-arent-considered">#</a></h2>
+<p>Voltage glitching, clock glitching, and electromagnetic fault
+injection let an attacker skip arbitrary instructions during boot —
+including the &ldquo;if signature invalid, halt&rdquo; instruction. With a few
+hundred dollars of equipment and patience, fairly hardened
+bootloaders can be defeated this way.</p>
+<p>Many secure boot implementations don&rsquo;t consider glitch attacks
+because:</p>
+<ul>
+<li>The threat model assumes &ldquo;firmware-only&rdquo; attackers</li>
+<li>Hardware-level attacks are harder to test for than software ones</li>
+<li>Glitch resistance requires specific code patterns and isn&rsquo;t free</li>
+</ul>
+<p><strong>What works:</strong> This depends on the threat model. For a smart bulb,
+glitch resistance might not be needed. For an automotive ECU or a
+payment terminal, it usually is. Design choices that help:</p>
+<ul>
+<li>Verify signatures multiple times with different code paths</li>
+<li>Use redundant flag variables (e.g., <code>authenticated == 0xA5A55A5A</code>,
+<code>unauthenticated == 0x00000000</code>) so a single bit-flip doesn&rsquo;t change
+the outcome</li>
+<li>Use silicon glitch detection where available</li>
+<li>Include explicit delays and integrity checks in critical paths</li>
+</ul>
+<p>The important step is stating the threat model honestly. If glitch
+attacks are out of scope, that&rsquo;s a valid design decision — as long
+as it&rsquo;s documented and the security claim is framed accordingly.</p>
+<h2 id="pitfall-8-the-chain-stops-at-the-first-stage">Pitfall 8: The chain stops at the first stage<a hidden class="anchor" aria-hidden="true" href="#pitfall-8-the-chain-stops-at-the-first-stage">#</a></h2>
+<p>Some products implement &ldquo;secure boot&rdquo; by having the boot ROM verify
+the first-stage bootloader. The first-stage bootloader then loads the
+kernel or application without verification.</p>
+<p>This leaves the chain half-finished. The attacker simply modifies
+whatever the first-stage bootloader loads next.</p>
+<p>A complete chain of trust has every stage verifying the next:</p>
+<ul>
+<li><strong>Boot ROM</strong> verifies → <strong>First-stage bootloader</strong></li>
+<li><strong>First-stage bootloader</strong> verifies → <strong>Second-stage bootloader</strong></li>
+<li><strong>Second-stage bootloader</strong> verifies → <strong>Secure monitor (TF-A)</strong></li>
+<li><strong>Secure monitor</strong> verifies → <strong>TEE (OP-TEE)</strong></li>
+<li><strong>TEE</strong> verifies → <strong>Non-secure bootloader</strong></li>
+<li><strong>Non-secure bootloader</strong> verifies → <strong>Kernel</strong></li>
+</ul>
+<p>Every step is a signature verification. Skip any one, and the chain
+is broken at that point and below.</p>
+<p><strong>What works:</strong> Audit the boot chain. Document every stage, what
+verifies the next, with what key, against what policy. Where
+verification is missing, add it. A chain with gaps doesn&rsquo;t provide
+end-to-end protection.</p>
+<h2 id="what-to-do-about-all-this">What to do about all this<a hidden class="anchor" aria-hidden="true" href="#what-to-do-about-all-this">#</a></h2>
+<p>Three practical steps for verifying secure boot rather than assuming:</p>
+<p><strong>1. Threat-model the boot flow.</strong> Write down every stage, every key,
+every assumption. Then ask: what does an attacker with physical
+access, firmware-only access, and remote access need to do at each
+stage to break the chain? Gaps tend to surface quickly.</p>
+<p><strong>2. Test the failure paths.</strong> Build deliberately broken firmware
+(invalid signature, modified payload, downgraded version) and confirm
+the device refuses every variation. Make these CI tests.</p>
+<p><strong>3. Document residual risk honestly.</strong> Some pitfalls are expensive
+to fix. Documenting the ones not addressed — and why — is more
+useful than blanket claims. &ldquo;We don&rsquo;t protect against glitch attacks
+because our threat model excludes attackers with hardware access&rdquo; is
+a valid statement. &ldquo;We have secure boot&rdquo; without that qualifier is
+incomplete.</p>
+<h2 id="the-principle-worth-remembering">The principle worth remembering<a hidden class="anchor" aria-hidden="true" href="#the-principle-worth-remembering">#</a></h2>
+<p>Secure boot isn&rsquo;t a feature that gets turned on. It&rsquo;s a property of
+the system that has to be designed, implemented, tested, and verified
+at every layer — silicon, bootloader, build pipeline, manufacturing,
+field operations.</p>
+<p>When secure boot doesn&rsquo;t deliver on its promise, it&rsquo;s usually because
+the obvious 60% got implemented and the remaining 40% — the failure
+modes, the operational discipline, the threat model honesty — was
+treated as out of scope or &ldquo;we&rsquo;ll get to it later.&rdquo;</p>
+<p>Treating secure boot as a checkbox produces something that looks like
+secure boot. Treating it as a property to be continuously verified
+produces the actual thing.</p>
+<hr>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="//localhost:1313/tags/secure-boot/">Secure-Boot</a></li>
+      <li><a href="//localhost:1313/tags/embedded-security/">Embedded Security</a></li>
+      <li><a href="//localhost:1313/tags/hardware-root-of-trust/">Hardware-Root-of-Trust</a></li>
+      <li><a href="//localhost:1313/tags/threat-modeling/">Threat-Modeling</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="//localhost:1313/posts/hardware-root-of-trust-explained/">
+    <span class="title">« Prev</span>
+    <span>Hardware Root of Trust: What It Actually Means</span>
+  </a>
+  <a class="next" href="//localhost:1313/posts/what-happens-before-main-runs/">
+    <span class="title">Next »</span>
+    <span>What Actually Happens Before main() Runs?</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2025 CodetoCore</span> · 
+
+    
+    
+    <span>
+        Powered by
+        <a href="https://gohugo.io/?utm_source=papermod" rel="noopener" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" id="top-link" class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up">
+        <polyline points="17 11 12 6 7 11"></polyline>
+        <polyline points="17 18 12 13 7 18"></polyline>
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var toplink = document.getElementById("top-link");
+    window.onscroll = function () {
+        const scrollThreshold = window.innerHeight;
+        if (document.body.scrollTop > scrollThreshold || document.documentElement.scrollTop > scrollThreshold) {
+            toplink.classList.remove("hidden");
+        } else {
+            toplink.classList.add("hidden");
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

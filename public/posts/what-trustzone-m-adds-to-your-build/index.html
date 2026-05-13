@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>What TrustZone-M Adds to Your Build | CodetoCore</title>
+<meta name="keywords" content="TrustZone-M, Cortex-M, Cortex-M23, Cortex-M33, ARM, Embedded Security, Secure Boot">
+<meta name="description" content="Why moving from a plain Cortex-M to a TrustZone-M part doubles your project structure — and what each new piece is actually doing.">
+<meta name="author" content="Somesh Singh">
+<link rel="canonical" href="//localhost:1313/posts/what-trustzone-m-adds-to-your-build/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7a73f6d22832740d3b34a080c56bbd1c5eae5d07a4fb24abad905861b132c9dd.css" integrity="sha256-enP20igydA07NKCAxWu9HF6uXQek&#43;ySrrZBYYbEyyd0=" rel="preload stylesheet" as="style">
+<link rel="icon" href="//localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="//localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="//localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="//localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="//localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="//localhost:1313/posts/what-trustzone-m-adds-to-your-build/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><meta property="og:url" content="//localhost:1313/posts/what-trustzone-m-adds-to-your-build/">
+  <meta property="og:site_name" content="CodetoCore">
+  <meta property="og:title" content="What TrustZone-M Adds to Your Build">
+  <meta property="og:description" content="Why moving from a plain Cortex-M to a TrustZone-M part doubles your project structure — and what each new piece is actually doing.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2025-12-03T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-05-12T11:44:30+05:30">
+    <meta property="article:tag" content="TrustZone-M">
+    <meta property="article:tag" content="Cortex-M">
+    <meta property="article:tag" content="Cortex-M23">
+    <meta property="article:tag" content="Cortex-M33">
+    <meta property="article:tag" content="ARM">
+    <meta property="article:tag" content="Embedded Security">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="What TrustZone-M Adds to Your Build">
+  <meta name="twitter:description" content="Why moving from a plain Cortex-M to a TrustZone-M part doubles your project structure — and what each new piece is actually doing.">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "//localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "What TrustZone-M Adds to Your Build",
+      "item": "//localhost:1313/posts/what-trustzone-m-adds-to-your-build/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "What TrustZone-M Adds to Your Build",
+  "name": "What TrustZone-M Adds to Your Build",
+  "description": "Why moving from a plain Cortex-M to a TrustZone-M part doubles your project structure — and what each new piece is actually doing.",
+  "keywords": [
+    "TrustZone-M", "Cortex-M", "Cortex-M23", "Cortex-M33", "ARM", "Embedded Security", "Secure Boot"
+  ],
+  "articleBody": "If you’ve shipped firmware on a Cortex-M0/M3/M4 part, you know what to expect from the build: one project, one linker script, one binary. Flash it, done.\nMove to a Cortex-M23 or M33 with TrustZone-M and the build roughly doubles. Two projects. Two linker scripts. Two binaries. A pile of new configuration you didn’t have before. None of it is gratuitous — TrustZone-M is doing something real — but it isn’t always obvious why each piece exists.\nHere’s what’s actually being added, and why.\nTwo Projects, Not One The core thing: TrustZone-M splits the MCU into a Secure world and a Non-Secure world, enforced by hardware. They can’t share code or data freely — that’s the whole point. So the firmware comes from two separate compile units:\nA secure project — trusted code, secret keys, security-critical state. A non-secure project — your application, your RTOS, your networking, your bugs. Each builds independently into its own binary. They run on the same processor, sit in the same flash, but the hardware enforces that one can’t read the other’s memory.\nThis is the irreducible reason the build is bigger. Everything else falls out of it.\nTwo Memory Maps One MCU, but flash and RAM both get split. The layout looks roughly like this:\nFLASH ┌────────────────────┐ ← high address │ │ │ Non-Secure Code │ NS │ (your app) │ │ │ ├────────────────────┤ │ NSC Veneers │ NSC ├────────────────────┤ │ │ │ Secure Code │ S │ (reset vector) │ │ │ └────────────────────┘ ← low address RAM ┌────────────────────┐ ← high address │ │ │ Non-Secure Data │ NS │ (app heap/stack) │ │ │ ├────────────────────┤ │ │ │ Secure Data │ S │ (keys, state) │ │ │ └────────────────────┘ ← low address The CPU comes out of reset in secure state, jumps to the secure reset vector at the bottom of flash, configures the SAU, and only then hands control to the non-secure side. The NSC region sits between the two code regions — it’s the only place the non-secure side is allowed to enter secure code from, via the SG (Secure Gateway) instruction.\nEach project’s linker script only knows about its own regions. Get the addresses wrong — overlap, or a gap that crosses a security boundary — and you don’t get a friendly error. You get a hard fault at runtime, usually somewhere unhelpful.\nThe SAU Has to Be Programmed A regular Cortex-M doesn’t have a Security Attribution Unit. A TrustZone-M part does, and it has to be told which addresses are secure, which are non-secure, and which are Non-Secure-Callable.\nThis happens very early in the secure firmware’s boot path. The secure side owns this configuration — the non-secure side has no say. And it has to match the memory map exactly. If the SAU thinks an address is secure but the linker placed non-secure code there, the CPU faults the moment that code tries to run.\nSo now you have three things that all have to stay in sync, by hand, across two projects:\nThe memory map. A linker script for each project that follows it. SAU configuration in the secure project that also follows it. Treat the memory map as the source of truth and have the rest derive from it. Duplicating addresses across files is how you find out at 2 a.m. that one of them was off by 4 KB.\nVeneers Are Real Code in the Binary When the non-secure side calls a function in the secure side, it doesn’t jump straight in. It jumps to a veneer — a tiny stub in the NSC region that executes the SG instruction to legally cross the boundary.\nThe veneers live in NSC memory. The non-secure side has to know their addresses to link against them. The secure side has to declare which functions are exported as veneers and which aren’t.\nIn practice:\nThe secure project produces an import library or header describing the veneers. The non-secure project links against that. Every time you add or remove a secure entry point, both sides have to rebuild in lockstep. Forgetting to rebuild one side after changing the interface is a classic source of “it builds fine but hard-faults on boot.”\nSecure Boot Adds Signing If the product enforces secure boot — and on a TrustZone-M part that’s shipping, it usually should — the build also has to sign the images. Now you have opinions to make about:\nWhich signing key. Where it lives — dev keys in the repo are fine, production keys belong in an HSM. They should not be the same key. The image format the bootloader expects: header, signature, version metadata. That often brings a third binary into the picture: the bootloader itself, which verifies the signed images at boot. Another linker script, another memory region, another set of keys to manage.\nHonest Tradeoffs None of this is overhead for its own sake:\nTwo projects, because the hardware enforces the split. Two memory maps and SAU config, because that’s how the hardware knows what’s secure. Veneers, because a direct call across the boundary would defeat the isolation. Signing, because unsigned firmware in a secure-boot system is just expensive paperweights. What you’re paying for is a property that’s hard to get any other way: a fully compromised application can’t read your secure keys, your secure storage, or your attestation material. If you don’t need that property, you don’t need TrustZone-M. If you do, the extra build complexity is the price.\nWhat Works A few habits that pay off once you’ve done this a couple of times:\nKeep the memory map in one place that both projects pull from. Don’t duplicate addresses across linker scripts by hand. Rebuild both sides whenever the secure interface changes. CI is the right place to enforce this. Treat signing-key configuration as a security review item, not a build engineering one. Pin everything — toolchain version, bootloader version, the lot. It doesn’t make the build small. It just makes it predictable.\nThis is personal exploration on publicly available reference platforms; it does not represent the views or work of my employer.\n",
+  "wordCount" : "1016",
+  "inLanguage": "en",
+  "datePublished": "2025-12-03T00:00:00Z",
+  "dateModified": "2026-05-12T11:44:30+05:30",
+  "author":{
+    "@type": "Person",
+    "name": "Somesh Singh"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "//localhost:1313/posts/what-trustzone-m-adds-to-your-build/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CodetoCore",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "//localhost:1313/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="header-nav">
+        <div class="logo">
+            <a href="//localhost:1313/" accesskey="h" title="CodetoCore (Alt + H)">CodetoCore</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" class="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu" class="menu">
+            <li>
+                <a href="//localhost:1313/projects/" title="Projects">
+                    <span>Projects</span>
+                </a>
+            </li>
+            <li>
+                <a href="//localhost:1313/posts/" title="Writing">
+                    <span>Writing</span>
+                </a>
+            </li>
+            <li>
+                <a href="//localhost:1313/about/" title="About">
+                    <span>About</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <nav class="breadcrumbs" role="navigation" aria-label="Breadcrumb">
+            <a href="/">Home</a>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+            <a href="/posts/">Posts</a>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+        <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+</nav>
+    <h1 class="post-title entry-hint-parent">
+      What TrustZone-M Adds to Your Build
+    </h1>
+    <div class="post-description">
+      Why moving from a plain Cortex-M to a TrustZone-M part doubles your project structure — and what each new piece is actually doing.
+    </div>
+    <div class="post-meta">
+
+<span title='2025-12-03 00:00:00 +0000 UTC'>December 3, 2025</span>&nbsp;·&nbsp;<span>5 min</span>&nbsp;·&nbsp;<span>Somesh Singh</span>
+
+</div>
+  </header> <details class="toc" >
+    <summary accesskey="c" title="(Alt + C)">
+        <span class="title">Table of Contents</span>
+    </summary>
+
+    <div class="inner"><ul>
+            <li>
+                <a href="#two-projects-not-one" aria-label="Two Projects, Not One">Two Projects, Not One</a></li>
+            <li>
+                <a href="#two-memory-maps" aria-label="Two Memory Maps">Two Memory Maps</a></li>
+            <li>
+                <a href="#the-sau-has-to-be-programmed" aria-label="The SAU Has to Be Programmed">The SAU Has to Be Programmed</a></li>
+            <li>
+                <a href="#veneers-are-real-code-in-the-binary" aria-label="Veneers Are Real Code in the Binary">Veneers Are Real Code in the Binary</a></li>
+            <li>
+                <a href="#secure-boot-adds-signing" aria-label="Secure Boot Adds Signing">Secure Boot Adds Signing</a></li>
+            <li>
+                <a href="#honest-tradeoffs" aria-label="Honest Tradeoffs">Honest Tradeoffs</a></li>
+            <li>
+                <a href="#what-works" aria-label="What Works">What Works</a>
+            </li>
+        </ul>
+    </div>
+</details>
+
+  <div class="post-content md-content"><p>If you&rsquo;ve shipped firmware on a Cortex-M0/M3/M4 part, you know what to expect from the build: one project, one linker script, one binary. Flash it, done.</p>
+<p>Move to a Cortex-M23 or M33 with TrustZone-M and the build roughly doubles. Two projects. Two linker scripts. Two binaries. A pile of new configuration you didn&rsquo;t have before. None of it is gratuitous — TrustZone-M is doing something real — but it isn&rsquo;t always obvious <em>why</em> each piece exists.</p>
+<p>Here&rsquo;s what&rsquo;s actually being added, and why.</p>
+<h2 id="two-projects-not-one">Two Projects, Not One<a hidden class="anchor" aria-hidden="true" href="#two-projects-not-one">#</a></h2>
+<p>The core thing: TrustZone-M splits the MCU into a Secure world and a Non-Secure world, enforced by hardware. They can&rsquo;t share code or data freely — that&rsquo;s the whole point. So the firmware comes from two separate compile units:</p>
+<ul>
+<li>A <strong>secure project</strong> — trusted code, secret keys, security-critical state.</li>
+<li>A <strong>non-secure project</strong> — your application, your RTOS, your networking, your bugs.</li>
+</ul>
+<p>Each builds independently into its own binary. They run on the same processor, sit in the same flash, but the hardware enforces that one can&rsquo;t read the other&rsquo;s memory.</p>
+<p>This is the irreducible reason the build is bigger. Everything else falls out of it.</p>
+<h2 id="two-memory-maps">Two Memory Maps<a hidden class="anchor" aria-hidden="true" href="#two-memory-maps">#</a></h2>
+<p>One MCU, but flash and RAM both get split. The layout looks roughly like this:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">FLASH
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  ┌────────────────────┐  ← high address
+</span></span><span class="line"><span class="cl">  │                    │
+</span></span><span class="line"><span class="cl">  │  Non-Secure Code   │   NS
+</span></span><span class="line"><span class="cl">  │  (your app)        │
+</span></span><span class="line"><span class="cl">  │                    │
+</span></span><span class="line"><span class="cl">  ├────────────────────┤
+</span></span><span class="line"><span class="cl">  │  NSC Veneers       │   NSC
+</span></span><span class="line"><span class="cl">  ├────────────────────┤
+</span></span><span class="line"><span class="cl">  │                    │
+</span></span><span class="line"><span class="cl">  │  Secure Code       │   S
+</span></span><span class="line"><span class="cl">  │  (reset vector)    │
+</span></span><span class="line"><span class="cl">  │                    │
+</span></span><span class="line"><span class="cl">  └────────────────────┘  ← low address
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">RAM
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  ┌────────────────────┐  ← high address
+</span></span><span class="line"><span class="cl">  │                    │
+</span></span><span class="line"><span class="cl">  │  Non-Secure Data   │   NS
+</span></span><span class="line"><span class="cl">  │  (app heap/stack)  │
+</span></span><span class="line"><span class="cl">  │                    │
+</span></span><span class="line"><span class="cl">  ├────────────────────┤
+</span></span><span class="line"><span class="cl">  │                    │
+</span></span><span class="line"><span class="cl">  │  Secure Data       │   S
+</span></span><span class="line"><span class="cl">  │  (keys, state)     │
+</span></span><span class="line"><span class="cl">  │                    │
+</span></span><span class="line"><span class="cl">  └────────────────────┘  ← low address
+</span></span></code></pre></div><p>The CPU comes out of reset in secure state, jumps to the secure reset vector at the bottom of flash, configures the SAU, and only then hands control to the non-secure side. The NSC region sits between the two code regions — it&rsquo;s the only place the non-secure side is allowed to enter secure code from, via the <code>SG</code> (Secure Gateway) instruction.</p>
+<p>Each project&rsquo;s linker script only knows about its own regions. Get the addresses wrong — overlap, or a gap that crosses a security boundary — and you don&rsquo;t get a friendly error. You get a hard fault at runtime, usually somewhere unhelpful.</p>
+<h2 id="the-sau-has-to-be-programmed">The SAU Has to Be Programmed<a hidden class="anchor" aria-hidden="true" href="#the-sau-has-to-be-programmed">#</a></h2>
+<p>A regular Cortex-M doesn&rsquo;t have a Security Attribution Unit. A TrustZone-M part does, and it has to be told which addresses are secure, which are non-secure, and which are Non-Secure-Callable.</p>
+<p>This happens very early in the secure firmware&rsquo;s boot path. The secure side owns this configuration — the non-secure side has no say. And it has to match the memory map exactly. If the SAU thinks an address is secure but the linker placed non-secure code there, the CPU faults the moment that code tries to run.</p>
+<p>So now you have three things that all have to stay in sync, by hand, across two projects:</p>
+<ul>
+<li>The memory map.</li>
+<li>A linker script for each project that follows it.</li>
+<li>SAU configuration in the secure project that also follows it.</li>
+</ul>
+<blockquote>
+<p>Treat the memory map as the source of truth and have the rest derive from it. Duplicating addresses across files is how you find out at 2 a.m. that one of them was off by 4 KB.</p>
+</blockquote>
+<h2 id="veneers-are-real-code-in-the-binary">Veneers Are Real Code in the Binary<a hidden class="anchor" aria-hidden="true" href="#veneers-are-real-code-in-the-binary">#</a></h2>
+<p>When the non-secure side calls a function in the secure side, it doesn&rsquo;t jump straight in. It jumps to a <strong>veneer</strong> — a tiny stub in the NSC region that executes the <code>SG</code> instruction to legally cross the boundary.</p>
+<p>The veneers live in NSC memory. The non-secure side has to know their addresses to link against them. The secure side has to declare which functions are exported as veneers and which aren&rsquo;t.</p>
+<p>In practice:</p>
+<ul>
+<li>The secure project produces an import library or header describing the veneers.</li>
+<li>The non-secure project links against that.</li>
+<li>Every time you add or remove a secure entry point, both sides have to rebuild in lockstep.</li>
+</ul>
+<p>Forgetting to rebuild one side after changing the interface is a classic source of &ldquo;it builds fine but hard-faults on boot.&rdquo;</p>
+<h2 id="secure-boot-adds-signing">Secure Boot Adds Signing<a hidden class="anchor" aria-hidden="true" href="#secure-boot-adds-signing">#</a></h2>
+<p>If the product enforces secure boot — and on a TrustZone-M part that&rsquo;s shipping, it usually should — the build also has to <em>sign</em> the images. Now you have opinions to make about:</p>
+<ul>
+<li>Which signing key.</li>
+<li>Where it lives — dev keys in the repo are fine, production keys belong in an HSM. They should not be the same key.</li>
+<li>The image format the bootloader expects: header, signature, version metadata.</li>
+</ul>
+<p>That often brings a third binary into the picture: the bootloader itself, which verifies the signed images at boot. Another linker script, another memory region, another set of keys to manage.</p>
+<h2 id="honest-tradeoffs">Honest Tradeoffs<a hidden class="anchor" aria-hidden="true" href="#honest-tradeoffs">#</a></h2>
+<p>None of this is overhead for its own sake:</p>
+<ul>
+<li>Two projects, because the hardware enforces the split.</li>
+<li>Two memory maps and SAU config, because that&rsquo;s how the hardware <em>knows</em> what&rsquo;s secure.</li>
+<li>Veneers, because a direct call across the boundary would defeat the isolation.</li>
+<li>Signing, because unsigned firmware in a secure-boot system is just expensive paperweights.</li>
+</ul>
+<p>What you&rsquo;re paying for is a property that&rsquo;s hard to get any other way: a fully compromised application can&rsquo;t read your secure keys, your secure storage, or your attestation material. If you don&rsquo;t need that property, you don&rsquo;t need TrustZone-M. If you do, the extra build complexity is the price.</p>
+<h2 id="what-works">What Works<a hidden class="anchor" aria-hidden="true" href="#what-works">#</a></h2>
+<p>A few habits that pay off once you&rsquo;ve done this a couple of times:</p>
+<ul>
+<li>Keep the memory map in one place that both projects pull from. Don&rsquo;t duplicate addresses across linker scripts by hand.</li>
+<li>Rebuild both sides whenever the secure interface changes. CI is the right place to enforce this.</li>
+<li>Treat signing-key configuration as a security review item, not a build engineering one.</li>
+<li>Pin everything — toolchain version, bootloader version, the lot.</li>
+</ul>
+<p>It doesn&rsquo;t make the build small. It just makes it predictable.</p>
+<hr>
+<p><em>This is personal exploration on publicly available reference platforms; it does not represent the views or work of my employer.</em></p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="//localhost:1313/tags/trustzone-m/">TrustZone-M</a></li>
+      <li><a href="//localhost:1313/tags/cortex-m/">Cortex-M</a></li>
+      <li><a href="//localhost:1313/tags/cortex-m23/">Cortex-M23</a></li>
+      <li><a href="//localhost:1313/tags/cortex-m33/">Cortex-M33</a></li>
+      <li><a href="//localhost:1313/tags/arm/">ARM</a></li>
+      <li><a href="//localhost:1313/tags/embedded-security/">Embedded Security</a></li>
+      <li><a href="//localhost:1313/tags/secure-boot/">Secure-Boot</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="//localhost:1313/posts/is-systick-accurate-for-microsecond-timing/">
+    <span class="title">« Prev</span>
+    <span>Is SysTick Accurate Enough for Microsecond Timing?</span>
+  </a>
+  <a class="next" href="//localhost:1313/posts/debug-works-release-breaks/">
+    <span class="title">Next »</span>
+    <span>Why Does My Code Work in Debug But Break in Release?</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2025 CodetoCore</span> · 
+
+    
+    
+    <span>
+        Powered by
+        <a href="https://gohugo.io/?utm_source=papermod" rel="noopener" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" id="top-link" class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up">
+        <polyline points="17 11 12 6 7 11"></polyline>
+        <polyline points="17 18 12 13 7 18"></polyline>
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var toplink = document.getElementById("top-link");
+    window.onscroll = function () {
+        const scrollThreshold = window.innerHeight;
+        if (document.body.scrollTop > scrollThreshold || document.documentElement.scrollTop > scrollThreshold) {
+            toplink.classList.remove("hidden");
+        } else {
+            toplink.classList.add("hidden");
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

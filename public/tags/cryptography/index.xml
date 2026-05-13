@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Cryptography on CodetoCore</title>
+    <link>//localhost:1313/tags/cryptography/</link>
+    <description>Recent content in Cryptography on CodetoCore</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <copyright>2025 CodetoCore</copyright>
+    <lastBuildDate>Sun, 10 May 2026 09:30:35 +0530</lastBuildDate>
+    <atom:link href="//localhost:1313/tags/cryptography/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Hardware Root of Trust: What It Actually Means</title>
+      <link>//localhost:1313/posts/hardware-root-of-trust-explained/</link>
+      <pubDate>Tue, 17 Jun 2025 00:00:00 +0000</pubDate>
+      <guid>//localhost:1313/posts/hardware-root-of-trust-explained/</guid>
+      <description>Hardware Root of Trust is one of the most-used and least-understood terms in embedded security. A short, practical breakdown of what it is, what it isn&amp;#39;t, and how to tell whether a product genuinely has one.</description>
+    </item>
+  </channel>
+</rss>

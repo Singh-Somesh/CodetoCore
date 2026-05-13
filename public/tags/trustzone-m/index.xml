@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>TrustZone-M on CodetoCore</title>
+    <link>//localhost:1313/tags/trustzone-m/</link>
+    <description>Recent content in TrustZone-M on CodetoCore</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <copyright>2025 CodetoCore</copyright>
+    <lastBuildDate>Tue, 12 May 2026 11:44:30 +0530</lastBuildDate>
+    <atom:link href="//localhost:1313/tags/trustzone-m/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>What TrustZone-M Adds to Your Build</title>
+      <link>//localhost:1313/posts/what-trustzone-m-adds-to-your-build/</link>
+      <pubDate>Wed, 03 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>//localhost:1313/posts/what-trustzone-m-adds-to-your-build/</guid>
+      <description>Why moving from a plain Cortex-M to a TrustZone-M part doubles your project structure — and what each new piece is actually doing.</description>
+    </item>
+  </channel>
+</rss>

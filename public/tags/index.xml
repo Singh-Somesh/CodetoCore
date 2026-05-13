@@ -2,10 +2,145 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Tags on CodetoCore</title>
-    <link>http://localhost:1313/tags/</link>
+    <link>//localhost:1313/tags/</link>
     <description>Recent content in Tags on CodetoCore</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <atom:link href="http://localhost:1313/tags/index.xml" rel="self" type="application/rss+xml" />
+    <copyright>2025 CodetoCore</copyright>
+    <lastBuildDate>Tue, 12 May 2026 12:36:14 +0530</lastBuildDate>
+    <atom:link href="//localhost:1313/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Cortex-M</title>
+      <link>//localhost:1313/tags/cortex-m/</link>
+      <pubDate>Thu, 12 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>//localhost:1313/tags/cortex-m/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Firmware</title>
+      <link>//localhost:1313/tags/firmware/</link>
+      <pubDate>Thu, 12 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>//localhost:1313/tags/firmware/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Quick Take</title>
+      <link>//localhost:1313/tags/quick-take/</link>
+      <pubDate>Thu, 12 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>//localhost:1313/tags/quick-take/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>SysTick</title>
+      <link>//localhost:1313/tags/systick/</link>
+      <pubDate>Thu, 12 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>//localhost:1313/tags/systick/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Timing</title>
+      <link>//localhost:1313/tags/timing/</link>
+      <pubDate>Thu, 12 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>//localhost:1313/tags/timing/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>ARM</title>
+      <link>//localhost:1313/tags/arm/</link>
+      <pubDate>Wed, 03 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>//localhost:1313/tags/arm/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Cortex-M23</title>
+      <link>//localhost:1313/tags/cortex-m23/</link>
+      <pubDate>Wed, 03 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>//localhost:1313/tags/cortex-m23/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Cortex-M33</title>
+      <link>//localhost:1313/tags/cortex-m33/</link>
+      <pubDate>Wed, 03 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>//localhost:1313/tags/cortex-m33/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Embedded Security</title>
+      <link>//localhost:1313/tags/embedded-security/</link>
+      <pubDate>Wed, 03 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>//localhost:1313/tags/embedded-security/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Secure-Boot</title>
+      <link>//localhost:1313/tags/secure-boot/</link>
+      <pubDate>Wed, 03 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>//localhost:1313/tags/secure-boot/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>TrustZone-M</title>
+      <link>//localhost:1313/tags/trustzone-m/</link>
+      <pubDate>Wed, 03 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>//localhost:1313/tags/trustzone-m/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Compiler</title>
+      <link>//localhost:1313/tags/compiler/</link>
+      <pubDate>Tue, 23 Sep 2025 00:00:00 +0000</pubDate>
+      <guid>//localhost:1313/tags/compiler/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Debugging</title>
+      <link>//localhost:1313/tags/debugging/</link>
+      <pubDate>Tue, 23 Sep 2025 00:00:00 +0000</pubDate>
+      <guid>//localhost:1313/tags/debugging/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Embedded</title>
+      <link>//localhost:1313/tags/embedded/</link>
+      <pubDate>Tue, 23 Sep 2025 00:00:00 +0000</pubDate>
+      <guid>//localhost:1313/tags/embedded/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Cryptography</title>
+      <link>//localhost:1313/tags/cryptography/</link>
+      <pubDate>Tue, 17 Jun 2025 00:00:00 +0000</pubDate>
+      <guid>//localhost:1313/tags/cryptography/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Hardware-Root-of-Trust</title>
+      <link>//localhost:1313/tags/hardware-root-of-trust/</link>
+      <pubDate>Tue, 17 Jun 2025 00:00:00 +0000</pubDate>
+      <guid>//localhost:1313/tags/hardware-root-of-trust/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Hsm</title>
+      <link>//localhost:1313/tags/hsm/</link>
+      <pubDate>Tue, 17 Jun 2025 00:00:00 +0000</pubDate>
+      <guid>//localhost:1313/tags/hsm/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Threat-Modeling</title>
+      <link>//localhost:1313/tags/threat-modeling/</link>
+      <pubDate>Sat, 10 May 2025 00:00:00 +0000</pubDate>
+      <guid>//localhost:1313/tags/threat-modeling/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Startup</title>
+      <link>//localhost:1313/tags/startup/</link>
+      <pubDate>Sat, 03 May 2025 00:00:00 +0000</pubDate>
+      <guid>//localhost:1313/tags/startup/</guid>
+      <description></description>
+    </item>
   </channel>
 </rss>

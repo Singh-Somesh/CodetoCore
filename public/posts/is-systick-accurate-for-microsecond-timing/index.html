@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Is SysTick Accurate Enough for Microsecond Timing? | CodetoCore</title>
+<meta name="keywords" content="Quick Take, Cortex-M, SysTick, Timing, Firmware">
+<meta name="description" content="Short answer: the counter is. Everything around it usually isn&#39;t.">
+<meta name="author" content="Somesh Singh">
+<link rel="canonical" href="//localhost:1313/posts/is-systick-accurate-for-microsecond-timing/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7a73f6d22832740d3b34a080c56bbd1c5eae5d07a4fb24abad905861b132c9dd.css" integrity="sha256-enP20igydA07NKCAxWu9HF6uXQek&#43;ySrrZBYYbEyyd0=" rel="preload stylesheet" as="style">
+<link rel="icon" href="//localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="//localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="//localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="//localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="//localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="//localhost:1313/posts/is-systick-accurate-for-microsecond-timing/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><meta property="og:url" content="//localhost:1313/posts/is-systick-accurate-for-microsecond-timing/">
+  <meta property="og:site_name" content="CodetoCore">
+  <meta property="og:title" content="Is SysTick Accurate Enough for Microsecond Timing?">
+  <meta property="og:description" content="Short answer: the counter is. Everything around it usually isn&#39;t.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2026-03-12T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-05-12T12:36:14+05:30">
+    <meta property="article:tag" content="Quick Take">
+    <meta property="article:tag" content="Cortex-M">
+    <meta property="article:tag" content="SysTick">
+    <meta property="article:tag" content="Timing">
+    <meta property="article:tag" content="Firmware">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Is SysTick Accurate Enough for Microsecond Timing?">
+  <meta name="twitter:description" content="Short answer: the counter is. Everything around it usually isn&#39;t.">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "//localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Is SysTick Accurate Enough for Microsecond Timing?",
+      "item": "//localhost:1313/posts/is-systick-accurate-for-microsecond-timing/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Is SysTick Accurate Enough for Microsecond Timing?",
+  "name": "Is SysTick Accurate Enough for Microsecond Timing?",
+  "description": "Short answer: the counter is. Everything around it usually isn't.",
+  "keywords": [
+    "Quick Take", "Cortex-M", "SysTick", "Timing", "Firmware"
+  ],
+  "articleBody": "Short answer: the counter is. Everything around it usually isn’t.\nSysTick on a Cortex-M is a 24-bit downcounter clocked off the core. At a 64 MHz core clock, one tick is ~15.6 ns. So the resolution is plenty — at microsecond scale, the count itself is fine.\nWhat actually limits you:\nInterrupt latency. If you’re using SysTick to fire an interrupt every microsecond, the time between the counter hitting zero and your handler’s first useful instruction is dozens of cycles — context save, vector fetch, pipeline refill. That’s typically 100–200 ns of overhead per tick on most parts, and it’s not constant. Higher-priority ISRs make it worse.\nPreemption by other ISRs. SysTick is usually configured at a low priority. Any ISR running at the same priority or higher delays your tick. UART, ADC, and timer interrupts all in flight at once means “every microsecond” quietly becomes “every microsecond plus whatever ran first.”\nClock domains. SysTick counts core ticks. Your peripheral lives on PCLK or some other bus clock. If you’re trying to time a peripheral event with SysTick precision, remember that the peripheral’s view of “now” is on a different, usually slower, clock.\nWhat works:\nFor software-to-software intervals: SysTick polling (not interrupting) is fine down to a few microseconds. For peripheral events: use a hardware timer’s input capture, not SysTick. The capture happens in hardware on the same edge the peripheral sees. For one-shot delays: a busy-loop on SysTick-\u003eVAL is more accurate than an interrupt-driven one, because there’s no ISR overhead in the path. The honest answer: SysTick is fine for microsecond timing if you’re measuring software intervals and can tolerate jitter of a few hundred nanoseconds. For anything tighter, or anything involving an external signal, reach for a hardware timer.\nThis is a general engineering note on publicly available platforms; it does not represent the views or work of my employer.\n",
+  "wordCount" : "312",
+  "inLanguage": "en",
+  "datePublished": "2026-03-12T00:00:00Z",
+  "dateModified": "2026-05-12T12:36:14+05:30",
+  "author":{
+    "@type": "Person",
+    "name": "Somesh Singh"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "//localhost:1313/posts/is-systick-accurate-for-microsecond-timing/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CodetoCore",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "//localhost:1313/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="header-nav">
+        <div class="logo">
+            <a href="//localhost:1313/" accesskey="h" title="CodetoCore (Alt + H)">CodetoCore</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" class="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu" class="menu">
+            <li>
+                <a href="//localhost:1313/projects/" title="Projects">
+                    <span>Projects</span>
+                </a>
+            </li>
+            <li>
+                <a href="//localhost:1313/posts/" title="Writing">
+                    <span>Writing</span>
+                </a>
+            </li>
+            <li>
+                <a href="//localhost:1313/about/" title="About">
+                    <span>About</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <nav class="breadcrumbs" role="navigation" aria-label="Breadcrumb">
+            <a href="/">Home</a>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+            <a href="/posts/">Posts</a>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+        <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+</nav>
+    <h1 class="post-title entry-hint-parent">
+      Is SysTick Accurate Enough for Microsecond Timing?
+    </h1>
+    <div class="post-description">
+      Short answer: the counter is. Everything around it usually isn&#39;t.
+    </div>
+    <div class="post-meta">
+
+<span title='2026-03-12 00:00:00 +0000 UTC'>March 12, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>Somesh Singh</span>
+
+</div>
+  </header> 
+  <div class="post-content md-content"><p>Short answer: the <em>counter</em> is. Everything around it usually isn&rsquo;t.</p>
+<p>SysTick on a Cortex-M is a 24-bit downcounter clocked off the core. At a 64 MHz core clock, one tick is ~15.6 ns. So the resolution is plenty — at microsecond scale, the count itself is fine.</p>
+<p>What actually limits you:</p>
+<p><strong>Interrupt latency.</strong>
+If you&rsquo;re using SysTick to fire an interrupt every microsecond, the time between the counter hitting zero and your handler&rsquo;s first useful instruction is dozens of cycles — context save, vector fetch, pipeline refill. That&rsquo;s typically 100–200 ns of overhead per tick on most parts, and it&rsquo;s not constant. Higher-priority ISRs make it worse.</p>
+<p><strong>Preemption by other ISRs.</strong>
+SysTick is usually configured at a low priority. Any ISR running at the same priority or higher delays your tick. UART, ADC, and timer interrupts all in flight at once means &ldquo;every microsecond&rdquo; quietly becomes &ldquo;every microsecond plus whatever ran first.&rdquo;</p>
+<p><strong>Clock domains.</strong>
+SysTick counts core ticks. Your peripheral lives on PCLK or some other bus clock. If you&rsquo;re trying to time a peripheral event with SysTick precision, remember that the peripheral&rsquo;s view of &ldquo;now&rdquo; is on a different, usually slower, clock.</p>
+<p>What works:</p>
+<ul>
+<li>For <em>software-to-software</em> intervals: SysTick polling (not interrupting) is fine down to a few microseconds.</li>
+<li>For <em>peripheral events</em>: use a hardware timer&rsquo;s input capture, not SysTick. The capture happens in hardware on the same edge the peripheral sees.</li>
+<li>For <em>one-shot delays</em>: a busy-loop on <code>SysTick-&gt;VAL</code> is more accurate than an interrupt-driven one, because there&rsquo;s no ISR overhead in the path.</li>
+</ul>
+<p>The honest answer: SysTick is fine for microsecond timing if you&rsquo;re measuring software intervals and can tolerate jitter of a few hundred nanoseconds. For anything tighter, or anything involving an external signal, reach for a hardware timer.</p>
+<p><em>This is a general engineering note on publicly available platforms; it does not represent the views or work of my employer.</em></p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="//localhost:1313/tags/quick-take/">Quick Take</a></li>
+      <li><a href="//localhost:1313/tags/cortex-m/">Cortex-M</a></li>
+      <li><a href="//localhost:1313/tags/systick/">SysTick</a></li>
+      <li><a href="//localhost:1313/tags/timing/">Timing</a></li>
+      <li><a href="//localhost:1313/tags/firmware/">Firmware</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="next" href="//localhost:1313/posts/what-trustzone-m-adds-to-your-build/">
+    <span class="title">Next »</span>
+    <span>What TrustZone-M Adds to Your Build</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2025 CodetoCore</span> · 
+
+    
+    
+    <span>
+        Powered by
+        <a href="https://gohugo.io/?utm_source=papermod" rel="noopener" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" id="top-link" class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up">
+        <polyline points="17 11 12 6 7 11"></polyline>
+        <polyline points="17 18 12 13 7 18"></polyline>
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var toplink = document.getElementById("top-link");
+    window.onscroll = function () {
+        const scrollThreshold = window.innerHeight;
+        if (document.body.scrollTop > scrollThreshold || document.documentElement.scrollTop > scrollThreshold) {
+            toplink.classList.remove("hidden");
+        } else {
+            toplink.classList.add("hidden");
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

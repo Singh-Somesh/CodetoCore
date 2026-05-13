@@ -1,0 +1,158 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1350" width="1080" height="1350">
+  <!-- Background -->
+  <rect width="1080" height="1350" fill="#F5EFE6"/>
+
+  <!-- Subtle background texture: soft horizontal lines -->
+  <line x1="80" y1="200" x2="1000" y2="200" stroke="#E8DDD0" stroke-width="1"/>
+
+  <!-- Title -->
+  <text x="540" y="115" text-anchor="middle"
+        font-family="Lora, Georgia, serif" font-size="48" font-weight="600" fill="#2D2520">
+    What happens before main() runs?
+  </text>
+
+  <!-- Subtitle -->
+  <text x="540" y="160" text-anchor="middle"
+        font-family="Poppins, sans-serif" font-size="20" font-weight="400" fill="#6B5D54">
+    On a Cortex-M MCU, in six steps before your code starts
+  </text>
+
+  <!-- ===== Step 1 ===== -->
+  <g transform="translate(160, 230)">
+    <rect width="760" height="110" rx="14" fill="#FFFFFF" stroke="#E8DDD0" stroke-width="1.5"/>
+    <circle cx="62" cy="55" r="30" fill="#C2410C"/>
+    <text x="62" y="64" text-anchor="middle"
+          font-family="Poppins, sans-serif" font-size="24" font-weight="700" fill="#FFFFFF">1</text>
+    <text x="120" y="50"
+          font-family="Poppins, sans-serif" font-size="24" font-weight="600" fill="#2D2520">
+      Read vector table
+    </text>
+    <text x="120" y="82"
+          font-family="DejaVu Sans Mono, Menlo, monospace" font-size="15" fill="#6B5D54">
+      Load SP from word 0, jump to handler at word 1
+    </text>
+  </g>
+
+  <!-- Arrow 1→2 -->
+  <line x1="540" y1="350" x2="540" y2="378" stroke="#A89888" stroke-width="2"/>
+  <polygon points="540,386 533,374 547,374" fill="#A89888"/>
+
+  <!-- ===== Step 2 ===== -->
+  <g transform="translate(160, 395)">
+    <rect width="760" height="110" rx="14" fill="#FFFFFF" stroke="#E8DDD0" stroke-width="1.5"/>
+    <circle cx="62" cy="55" r="30" fill="#C2410C"/>
+    <text x="62" y="64" text-anchor="middle"
+          font-family="Poppins, sans-serif" font-size="24" font-weight="700" fill="#FFFFFF">2</text>
+    <text x="120" y="50"
+          font-family="Poppins, sans-serif" font-size="24" font-weight="600" fill="#2D2520">
+      Reset_Handler runs
+    </text>
+    <text x="120" y="82"
+          font-family="DejaVu Sans Mono, Menlo, monospace" font-size="15" fill="#6B5D54">
+      Startup code begins — everything from here is software
+    </text>
+  </g>
+
+  <!-- Arrow 2→3 -->
+  <line x1="540" y1="515" x2="540" y2="543" stroke="#A89888" stroke-width="2"/>
+  <polygon points="540,551 533,539 547,539" fill="#A89888"/>
+
+  <!-- ===== Step 3 ===== -->
+  <g transform="translate(160, 560)">
+    <rect width="760" height="110" rx="14" fill="#FFFFFF" stroke="#E8DDD0" stroke-width="1.5"/>
+    <circle cx="62" cy="55" r="30" fill="#C2410C"/>
+    <text x="62" y="64" text-anchor="middle"
+          font-family="Poppins, sans-serif" font-size="24" font-weight="700" fill="#FFFFFF">3</text>
+    <text x="120" y="50"
+          font-family="Poppins, sans-serif" font-size="24" font-weight="600" fill="#2D2520">
+      SystemInit() — configure clocks
+    </text>
+    <text x="120" y="82"
+          font-family="DejaVu Sans Mono, Menlo, monospace" font-size="15" fill="#6B5D54">
+      Switch from internal RC oscillator to PLL / crystal
+    </text>
+  </g>
+
+  <!-- Arrow 3→4 -->
+  <line x1="540" y1="680" x2="540" y2="708" stroke="#A89888" stroke-width="2"/>
+  <polygon points="540,716 533,704 547,704" fill="#A89888"/>
+
+  <!-- ===== Step 4 ===== -->
+  <g transform="translate(160, 725)">
+    <rect width="760" height="110" rx="14" fill="#FFFFFF" stroke="#E8DDD0" stroke-width="1.5"/>
+    <circle cx="62" cy="55" r="30" fill="#C2410C"/>
+    <text x="62" y="64" text-anchor="middle"
+          font-family="Poppins, sans-serif" font-size="24" font-weight="700" fill="#FFFFFF">4</text>
+    <text x="120" y="50"
+          font-family="Poppins, sans-serif" font-size="24" font-weight="600" fill="#2D2520">
+      Copy .data: flash → RAM
+    </text>
+    <text x="120" y="82"
+          font-family="DejaVu Sans Mono, Menlo, monospace" font-size="15" fill="#6B5D54">
+      Initialized globals get their starting values
+    </text>
+  </g>
+
+  <!-- Arrow 4→5 -->
+  <line x1="540" y1="845" x2="540" y2="873" stroke="#A89888" stroke-width="2"/>
+  <polygon points="540,881 533,869 547,869" fill="#A89888"/>
+
+  <!-- ===== Step 5 ===== -->
+  <g transform="translate(160, 890)">
+    <rect width="760" height="110" rx="14" fill="#FFFFFF" stroke="#E8DDD0" stroke-width="1.5"/>
+    <circle cx="62" cy="55" r="30" fill="#C2410C"/>
+    <text x="62" y="64" text-anchor="middle"
+          font-family="Poppins, sans-serif" font-size="24" font-weight="700" fill="#FFFFFF">5</text>
+    <text x="120" y="50"
+          font-family="Poppins, sans-serif" font-size="24" font-weight="600" fill="#2D2520">
+      Zero .bss in RAM
+    </text>
+    <text x="120" y="82"
+          font-family="DejaVu Sans Mono, Menlo, monospace" font-size="15" fill="#6B5D54">
+      Uninitialized globals get set to 0 (as the C standard requires)
+    </text>
+  </g>
+
+  <!-- Arrow 5→6 -->
+  <line x1="540" y1="1010" x2="540" y2="1038" stroke="#A89888" stroke-width="2"/>
+  <polygon points="540,1046 533,1034 547,1034" fill="#A89888"/>
+
+  <!-- ===== Step 6 ===== -->
+  <g transform="translate(160, 1055)">
+    <rect width="760" height="110" rx="14" fill="#FFFFFF" stroke="#E8DDD0" stroke-width="1.5"/>
+    <circle cx="62" cy="55" r="30" fill="#C2410C"/>
+    <text x="62" y="64" text-anchor="middle"
+          font-family="Poppins, sans-serif" font-size="24" font-weight="700" fill="#FFFFFF">6</text>
+    <text x="120" y="50"
+          font-family="Poppins, sans-serif" font-size="24" font-weight="600" fill="#2D2520">
+      libc init &amp; constructors
+    </text>
+    <text x="120" y="82"
+          font-family="DejaVu Sans Mono, Menlo, monospace" font-size="15" fill="#6B5D54">
+      __libc_init_array — heap setup, C++ ctors, then main()
+    </text>
+  </g>
+
+  <!-- Arrow 6→main -->
+  <line x1="540" y1="1175" x2="540" y2="1203" stroke="#A89888" stroke-width="2"/>
+  <polygon points="540,1211 533,1199 547,1199" fill="#A89888"/>
+
+  <!-- ===== main() destination ===== -->
+  <g transform="translate(160, 1220)">
+    <rect width="760" height="90" rx="14" fill="#2D2520"/>
+    <text x="380" y="45" text-anchor="middle"
+          font-family="DejaVu Sans Mono, Menlo, monospace" font-size="26" font-weight="700" fill="#FFFFFF">
+      main()
+    </text>
+    <text x="380" y="72" text-anchor="middle"
+          font-family="Poppins, sans-serif" font-size="14" font-weight="400" fill="#C2B5A8">
+      your application code starts here
+    </text>
+  </g>
+
+  <!-- Footer attribution -->
+  <text x="540" y="1335" text-anchor="middle"
+        font-family="Poppins, sans-serif" font-size="14" font-weight="500" fill="#A89888">
+    codetocore.com
+  </text>
+</svg>

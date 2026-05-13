@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Startup on CodetoCore</title>
+    <link>//localhost:1313/tags/startup/</link>
+    <description>Recent content in Startup on CodetoCore</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <copyright>2025 CodetoCore</copyright>
+    <lastBuildDate>Sat, 03 May 2025 00:00:00 +0000</lastBuildDate>
+    <atom:link href="//localhost:1313/tags/startup/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>What Actually Happens Before main() Runs?</title>
+      <link>//localhost:1313/posts/what-happens-before-main-runs/</link>
+      <pubDate>Sat, 03 May 2025 00:00:00 +0000</pubDate>
+      <guid>//localhost:1313/posts/what-happens-before-main-runs/</guid>
+      <description>A lot. The CPU walks through six setup stages between power-up and your first line of C — and bugs in any of them look very different from each other.</description>
+    </item>
+  </channel>
+</rss>

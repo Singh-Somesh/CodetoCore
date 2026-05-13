@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>What Actually Happens Before main() Runs? | CodetoCore</title>
+<meta name="keywords" content="Quick Take, Firmware, ARM, Cortex-M, Startup, Embedded">
+<meta name="description" content="A lot. The CPU walks through six setup stages between power-up and your first line of C — and bugs in any of them look very different from each other.">
+<meta name="author" content="Somesh Singh">
+<link rel="canonical" href="//localhost:1313/posts/what-happens-before-main-runs/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7a73f6d22832740d3b34a080c56bbd1c5eae5d07a4fb24abad905861b132c9dd.css" integrity="sha256-enP20igydA07NKCAxWu9HF6uXQek&#43;ySrrZBYYbEyyd0=" rel="preload stylesheet" as="style">
+<link rel="icon" href="//localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="//localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="//localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="//localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="//localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="//localhost:1313/posts/what-happens-before-main-runs/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><meta property="og:url" content="//localhost:1313/posts/what-happens-before-main-runs/">
+  <meta property="og:site_name" content="CodetoCore">
+  <meta property="og:title" content="What Actually Happens Before main() Runs?">
+  <meta property="og:description" content="A lot. The CPU walks through six setup stages between power-up and your first line of C — and bugs in any of them look very different from each other.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2025-05-03T00:00:00+00:00">
+    <meta property="article:modified_time" content="2025-05-03T00:00:00+00:00">
+    <meta property="article:tag" content="Quick Take">
+    <meta property="article:tag" content="Firmware">
+    <meta property="article:tag" content="ARM">
+    <meta property="article:tag" content="Cortex-M">
+    <meta property="article:tag" content="Startup">
+    <meta property="article:tag" content="Embedded">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="What Actually Happens Before main() Runs?">
+  <meta name="twitter:description" content="A lot. The CPU walks through six setup stages between power-up and your first line of C — and bugs in any of them look very different from each other.">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "//localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "What Actually Happens Before main() Runs?",
+      "item": "//localhost:1313/posts/what-happens-before-main-runs/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "What Actually Happens Before main() Runs?",
+  "name": "What Actually Happens Before main() Runs?",
+  "description": "A lot. The CPU walks through six setup stages between power-up and your first line of C — and bugs in any of them look very different from each other.",
+  "keywords": [
+    "Quick Take", "Firmware", "ARM", "Cortex-M", "Startup", "Embedded"
+  ],
+  "articleBody": "Short answer: a lot. The CPU walks through six setup stages between power-up and the first line of your main() — and bugs in any of them look like everything from “main never runs” to “main runs but the globals are garbage.”\nHere’s the sequence at a glance:\nNow the detail of each step, on a typical ARM Cortex-M part:\n1. The CPU reads the vector table. On reset, the core reads the first two words at address 0x00000000 (or wherever VTOR points). Word 0 is the initial stack pointer. Word 1 is the address of the reset handler. The core loads SP, then jumps to the reset handler.\nIf those two words are wrong — table at the wrong offset, linker placed it somewhere else — the CPU faults before any of your code has run.\n2. Reset_Handler runs. This is the function the linker placed at the reset vector. On most toolchains it’s auto-generated startup code, but you can override it. Everything from here is software.\n3. SystemInit() sets up clocks. The CPU is running on the default reset clock — usually an internal RC oscillator, often slow. SystemInit() switches to your real clock source: external crystal, PLL, whatever the board uses. After this, the CPU is running at full speed.\n4. .data is copied from flash to RAM. Initialized globals like int counter = 5; have their starting value sitting in flash, but they have to live in RAM so they can be modified at runtime. The startup code copies the block from flash to RAM.\n5. .bss is zeroed. Uninitialized globals like int counter; are guaranteed by the C standard to read as zero. The startup code zeroes the entire .bss region in RAM to make that true.\n6. Libc init runs, then main(). On GCC + newlib this is __libc_init_array — it calls any constructor functions you’ve marked, sets up libc internals like the heap, and finally calls main().\nWhy this matters when things break:\nmain() never runs → problem in steps 1–3 (vector table, reset handler, or clock setup). main() runs but globals look wrong → problem in steps 4–5 (.data or .bss). Worth setting a breakpoint on Reset_Handler once on every new project, just to step through and watch it happen. After that, when something goes weird before main(), you’ll know exactly where to look.\n",
+  "wordCount" : "392",
+  "inLanguage": "en",
+  "datePublished": "2025-05-03T00:00:00Z",
+  "dateModified": "2025-05-03T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "Somesh Singh"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "//localhost:1313/posts/what-happens-before-main-runs/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CodetoCore",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "//localhost:1313/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="header-nav">
+        <div class="logo">
+            <a href="//localhost:1313/" accesskey="h" title="CodetoCore (Alt + H)">CodetoCore</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" class="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu" class="menu">
+            <li>
+                <a href="//localhost:1313/projects/" title="Projects">
+                    <span>Projects</span>
+                </a>
+            </li>
+            <li>
+                <a href="//localhost:1313/posts/" title="Writing">
+                    <span>Writing</span>
+                </a>
+            </li>
+            <li>
+                <a href="//localhost:1313/about/" title="About">
+                    <span>About</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <nav class="breadcrumbs" role="navigation" aria-label="Breadcrumb">
+            <a href="/">Home</a>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+            <a href="/posts/">Posts</a>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+        <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+</nav>
+    <h1 class="post-title entry-hint-parent">
+      What Actually Happens Before main() Runs?
+    </h1>
+    <div class="post-description">
+      A lot. The CPU walks through six setup stages between power-up and your first line of C — and bugs in any of them look very different from each other.
+    </div>
+    <div class="post-meta">
+
+<span title='2025-05-03 00:00:00 +0000 UTC'>May 3, 2025</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>Somesh Singh</span>
+
+</div>
+  </header> 
+  <div class="post-content md-content"><p>Short answer: a lot. The CPU walks through six setup stages between power-up and the first line of your <code>main()</code> — and bugs in any of them look like everything from &ldquo;main never runs&rdquo; to &ldquo;main runs but the globals are garbage.&rdquo;</p>
+<p>Here&rsquo;s the sequence at a glance:</p>
+<p><img alt="What happens before main() runs — six startup steps on a Cortex-M" loading="lazy" src="/images/before-main-flowchart.svg"></p>
+<p>Now the detail of each step, on a typical ARM Cortex-M part:</p>
+<p><strong>1. The CPU reads the vector table.</strong>
+On reset, the core reads the first two words at address 0x00000000 (or wherever VTOR points). Word 0 is the initial stack pointer. Word 1 is the address of the reset handler. The core loads SP, then jumps to the reset handler.</p>
+<p>If those two words are wrong — table at the wrong offset, linker placed it somewhere else — the CPU faults before any of your code has run.</p>
+<p><strong>2. <code>Reset_Handler</code> runs.</strong>
+This is the function the linker placed at the reset vector. On most toolchains it&rsquo;s auto-generated startup code, but you can override it. Everything from here is software.</p>
+<p><strong>3. <code>SystemInit()</code> sets up clocks.</strong>
+The CPU is running on the default reset clock — usually an internal RC oscillator, often slow. <code>SystemInit()</code> switches to your real clock source: external crystal, PLL, whatever the board uses. After this, the CPU is running at full speed.</p>
+<p><strong>4. <code>.data</code> is copied from flash to RAM.</strong>
+Initialized globals like <code>int counter = 5;</code> have their starting value sitting in flash, but they have to live in RAM so they can be modified at runtime. The startup code copies the block from flash to RAM.</p>
+<p><strong>5. <code>.bss</code> is zeroed.</strong>
+Uninitialized globals like <code>int counter;</code> are guaranteed by the C standard to read as zero. The startup code zeroes the entire <code>.bss</code> region in RAM to make that true.</p>
+<p><strong>6. Libc init runs, then <code>main()</code>.</strong>
+On GCC + newlib this is <code>__libc_init_array</code> — it calls any constructor functions you&rsquo;ve marked, sets up libc internals like the heap, and finally calls <code>main()</code>.</p>
+<p>Why this matters when things break:</p>
+<ul>
+<li><code>main()</code> never runs → problem in steps 1–3 (vector table, reset handler, or clock setup).</li>
+<li><code>main()</code> runs but globals look wrong → problem in steps 4–5 (<code>.data</code> or <code>.bss</code>).</li>
+</ul>
+<p>Worth setting a breakpoint on <code>Reset_Handler</code> once on every new project, just to step through and watch it happen. After that, when something goes weird before <code>main()</code>, you&rsquo;ll know exactly where to look.</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="//localhost:1313/tags/quick-take/">Quick Take</a></li>
+      <li><a href="//localhost:1313/tags/firmware/">Firmware</a></li>
+      <li><a href="//localhost:1313/tags/arm/">ARM</a></li>
+      <li><a href="//localhost:1313/tags/cortex-m/">Cortex-M</a></li>
+      <li><a href="//localhost:1313/tags/startup/">Startup</a></li>
+      <li><a href="//localhost:1313/tags/embedded/">Embedded</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="//localhost:1313/posts/secure-boot-pitfalls/">
+    <span class="title">« Prev</span>
+    <span>Why Your Secure Boot Probably Isn&#39;t Actually Secure</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2025 CodetoCore</span> · 
+
+    
+    
+    <span>
+        Powered by
+        <a href="https://gohugo.io/?utm_source=papermod" rel="noopener" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" id="top-link" class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up">
+        <polyline points="17 11 12 6 7 11"></polyline>
+        <polyline points="17 18 12 13 7 18"></polyline>
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var toplink = document.getElementById("top-link");
+    window.onscroll = function () {
+        const scrollThreshold = window.innerHeight;
+        if (document.body.scrollTop > scrollThreshold || document.documentElement.scrollTop > scrollThreshold) {
+            toplink.classList.remove("hidden");
+        } else {
+            toplink.classList.add("hidden");
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

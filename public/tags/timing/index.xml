@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Timing on CodetoCore</title>
+    <link>//localhost:1313/tags/timing/</link>
+    <description>Recent content in Timing on CodetoCore</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <copyright>2025 CodetoCore</copyright>
+    <lastBuildDate>Tue, 12 May 2026 12:36:14 +0530</lastBuildDate>
+    <atom:link href="//localhost:1313/tags/timing/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Is SysTick Accurate Enough for Microsecond Timing?</title>
+      <link>//localhost:1313/posts/is-systick-accurate-for-microsecond-timing/</link>
+      <pubDate>Thu, 12 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>//localhost:1313/posts/is-systick-accurate-for-microsecond-timing/</guid>
+      <description>Short answer: the counter is. Everything around it usually isn&amp;#39;t.</description>
+    </item>
+  </channel>
+</rss>

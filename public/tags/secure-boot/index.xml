@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Secure-Boot on CodetoCore</title>
+    <link>//localhost:1313/tags/secure-boot/</link>
+    <description>Recent content in Secure-Boot on CodetoCore</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <copyright>2025 CodetoCore</copyright>
+    <lastBuildDate>Tue, 12 May 2026 11:44:30 +0530</lastBuildDate>
+    <atom:link href="//localhost:1313/tags/secure-boot/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>What TrustZone-M Adds to Your Build</title>
+      <link>//localhost:1313/posts/what-trustzone-m-adds-to-your-build/</link>
+      <pubDate>Wed, 03 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>//localhost:1313/posts/what-trustzone-m-adds-to-your-build/</guid>
+      <description>Why moving from a plain Cortex-M to a TrustZone-M part doubles your project structure — and what each new piece is actually doing.</description>
+    </item>
+    <item>
+      <title>Hardware Root of Trust: What It Actually Means</title>
+      <link>//localhost:1313/posts/hardware-root-of-trust-explained/</link>
+      <pubDate>Tue, 17 Jun 2025 00:00:00 +0000</pubDate>
+      <guid>//localhost:1313/posts/hardware-root-of-trust-explained/</guid>
+      <description>Hardware Root of Trust is one of the most-used and least-understood terms in embedded security. A short, practical breakdown of what it is, what it isn&amp;#39;t, and how to tell whether a product genuinely has one.</description>
+    </item>
+    <item>
+      <title>Why Your Secure Boot Probably Isn&#39;t Actually Secure</title>
+      <link>//localhost:1313/posts/secure-boot-pitfalls/</link>
+      <pubDate>Sat, 10 May 2025 00:00:00 +0000</pubDate>
+      <guid>//localhost:1313/posts/secure-boot-pitfalls/</guid>
+      <description>Most secure boot implementations look fine on paper but fail under realistic threat models. Eight common pitfalls — and what fixing them requires.</description>
+    </item>
+  </channel>
+</rss>

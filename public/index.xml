@@ -2,10 +2,68 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>CodetoCore</title>
-    <link>http://localhost:1313/</link>
+    <link>//localhost:1313/</link>
     <description>Recent content on CodetoCore</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <copyright>2025 CodetoCore</copyright>
+    <lastBuildDate>Tue, 12 May 2026 12:36:14 +0530</lastBuildDate>
+    <atom:link href="//localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Is SysTick Accurate Enough for Microsecond Timing?</title>
+      <link>//localhost:1313/posts/is-systick-accurate-for-microsecond-timing/</link>
+      <pubDate>Thu, 12 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>//localhost:1313/posts/is-systick-accurate-for-microsecond-timing/</guid>
+      <description>Short answer: the counter is. Everything around it usually isn&amp;#39;t.</description>
+    </item>
+    <item>
+      <title>What TrustZone-M Adds to Your Build</title>
+      <link>//localhost:1313/posts/what-trustzone-m-adds-to-your-build/</link>
+      <pubDate>Wed, 03 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>//localhost:1313/posts/what-trustzone-m-adds-to-your-build/</guid>
+      <description>Why moving from a plain Cortex-M to a TrustZone-M part doubles your project structure — and what each new piece is actually doing.</description>
+    </item>
+    <item>
+      <title>Why Does My Code Work in Debug But Break in Release?</title>
+      <link>//localhost:1313/posts/debug-works-release-breaks/</link>
+      <pubDate>Tue, 23 Sep 2025 00:00:00 +0000</pubDate>
+      <guid>//localhost:1313/posts/debug-works-release-breaks/</guid>
+      <description>Short answer: optimization isn&amp;#39;t doing the wrong thing. Your code was always wrong — debug builds just happened to hide it.</description>
+    </item>
+    <item>
+      <title>Hardware Root of Trust: What It Actually Means</title>
+      <link>//localhost:1313/posts/hardware-root-of-trust-explained/</link>
+      <pubDate>Tue, 17 Jun 2025 00:00:00 +0000</pubDate>
+      <guid>//localhost:1313/posts/hardware-root-of-trust-explained/</guid>
+      <description>Hardware Root of Trust is one of the most-used and least-understood terms in embedded security. A short, practical breakdown of what it is, what it isn&amp;#39;t, and how to tell whether a product genuinely has one.</description>
+    </item>
+    <item>
+      <title>Why Your Secure Boot Probably Isn&#39;t Actually Secure</title>
+      <link>//localhost:1313/posts/secure-boot-pitfalls/</link>
+      <pubDate>Sat, 10 May 2025 00:00:00 +0000</pubDate>
+      <guid>//localhost:1313/posts/secure-boot-pitfalls/</guid>
+      <description>Most secure boot implementations look fine on paper but fail under realistic threat models. Eight common pitfalls — and what fixing them requires.</description>
+    </item>
+    <item>
+      <title>What Actually Happens Before main() Runs?</title>
+      <link>//localhost:1313/posts/what-happens-before-main-runs/</link>
+      <pubDate>Sat, 03 May 2025 00:00:00 +0000</pubDate>
+      <guid>//localhost:1313/posts/what-happens-before-main-runs/</guid>
+      <description>A lot. The CPU walks through six setup stages between power-up and your first line of C — and bugs in any of them look very different from each other.</description>
+    </item>
+    <item>
+      <title>About</title>
+      <link>//localhost:1313/about/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>//localhost:1313/about/</guid>
+      <description>&lt;p&gt;I&amp;rsquo;m Somesh Singh — an embedded software engineer specializing in
+hardware-rooted security for connected devices.&lt;/p&gt;
+&lt;p&gt;My work focuses on ARM Cortex-M and Cortex-A platforms, Trusted
+Firmware and TrustZone architectures, and building production-grade
+reference designs that global OEMs adopt for their own products. In
+practice, that means secure boot chains, signed FOTA update systems,
+hardware Secure Element integration, and the symmetric and asymmetric
+cryptography — AES, ECDH, ECC, RSA, TLS — that holds it all together.&lt;/p&gt;</description>
+    </item>
   </channel>
 </rss>

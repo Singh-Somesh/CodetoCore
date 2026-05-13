@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Debugging on CodetoCore</title>
+    <link>//localhost:1313/tags/debugging/</link>
+    <description>Recent content in Debugging on CodetoCore</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <copyright>2025 CodetoCore</copyright>
+    <lastBuildDate>Tue, 12 May 2026 12:36:14 +0530</lastBuildDate>
+    <atom:link href="//localhost:1313/tags/debugging/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Why Does My Code Work in Debug But Break in Release?</title>
+      <link>//localhost:1313/posts/debug-works-release-breaks/</link>
+      <pubDate>Tue, 23 Sep 2025 00:00:00 +0000</pubDate>
+      <guid>//localhost:1313/posts/debug-works-release-breaks/</guid>
+      <description>Short answer: optimization isn&amp;#39;t doing the wrong thing. Your code was always wrong — debug builds just happened to hide it.</description>
+    </item>
+  </channel>
+</rss>
