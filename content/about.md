@@ -9,9 +9,9 @@ hideInList: true
 
 I'm Somesh Singh — a principal embedded firmware engineer and tech enthusiast, focused on the security architecture of connected systems on ARM Cortex-M & Cortex-A.
 
-My work centers on hardware-rooted trust: TrustZone-based isolation with TF-M and TF-A, secure boot chains, Firmware Over-The-Air, hardware Secure Element integration, and symmetric and asymmetric cryptography that holds the trust model together. Most of this work spans RTOS and Linux-based secure architectures.
+My work centers on hardware-rooted trust: TrustZone-based isolation with TF-M and TF-A, secure boot chains, Firmware Over-The-Air, hardware Secure Element integration, symmetric and asymmetric cryptography that holds the trust model together. Most of this work spans RTOS and Linux-based secure architectures.
 
-At Microchip Technology, this work shows up in secure firmware for Edge ML, automotive, and EV charging platforms.
+At Microchip Technology, this work shows up in secure firmware for Edge ML, Automotive, and EV charging platforms.
 
 ## Why this site exists
 
